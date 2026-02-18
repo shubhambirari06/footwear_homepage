@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Running Shoes",
+    "price": "₹2499",
+    "image": "https://images.pexels.com/photos/1032110/pexels-photo-1032110.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 2,
+    "name": "Leather Boots",
+    "price": "₹3499",
+    "image": "https://images.pexels.com/photos/267301/pexels-photo-267301.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 3,
+    "name": "Casual Sneakers",
+    "price": "₹1999",
+    "image": "https://images.pexels.com/photos/2529147/pexels-photo-2529147.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 4,
+    "name": "Formal Shoes",
+    "price": "₹2999",
+    "image": "https://images.pexels.com/photos/292999/pexels-photo-292999.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 5,
+    "name": "Sandals",
+    "price": "₹999",
+    "image": "https://images.pexels.com/photos/267202/pexels-photo-267202.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 6,
+    "name": "Flip Flops",
+    "price": "₹499",
+    "image": "https://images.pexels.com/photos/1620309/pexels-photo-1620309.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 7,
+    "name": "Loafers",
+    "price": "₹1499",
+    "image": "https://images.pexels.com/photos/1027130/pexels-photo-1027130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  },
+  {
+    "id": 8,
+    "name": "Sports Shoes",
+    "price": "₹1999",
+    "image": "https://images.pexels.com/photos/1478442/pexels-photo-1478442.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+  }
+]

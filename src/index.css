@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-neutral-100;
+  }
+
+  body {
+    @apply bg-white text-neutral-900 font-sans;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  a {
+    @apply font-medium text-neutral-900 no-underline;
+  }
+
+  a:hover {
+    @apply text-amber-700;
+  }
+
+  button {
+    @apply transition-all;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto px-4 md:px-6;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: fadeIn 0.7s ease-in-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
