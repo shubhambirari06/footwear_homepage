@@ -4,15 +4,17 @@ import { Filter, X, ChevronDown, ArrowLeft } from 'lucide-react';
 import { products } from '../data';
 import { Product } from '../types';
 import { ProductCard } from './ProductCard';
+import { ProductDetailModal } from './Product/ProductDetailModal';
 import { Footer } from './Footer';
 
 interface AllProductsProps {
   onBack: () => void;
-  onProductClick: (product: Product) => void;
 }
 
-export const AllProducts: React.FC<AllProductsProps> = ({ onBack, onProductClick }) => {
+export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
@@ -245,10 +247,8 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack, onProductClick
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       viewport={{ once: true }}
-                      onClick={() => onProductClick(product)}
-                      className="cursor-pointer"
                     >
-                      <ProductCard product={product} />
+                      <ProductCard product={product} onClick={() => setSelectedProduct(product)} />
                     </motion.div>
                   ))}
                 </div>
@@ -278,6 +278,12 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack, onProductClick
       </div>
 
       <Footer />
+
+      <ProductDetailModal 
+        product={selectedProduct}
+        isOpen={selectedProduct !== null}
+        onClose={() => setSelectedProduct(null)}
+      />
     </>
   );
 };

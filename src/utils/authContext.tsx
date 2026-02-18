@@ -1,26 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface User {
+interface UserData {
+  id: string;
   name: string;
   email: string;
   phoneNumber: string;
-  joinDate: string;auth
+  joinDate: string;
 }
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  user: User | null;
+  user: UserData | null;
   login: (email: string, password: string) => { success: boolean; message?: string };
   register: (name: string, email: string, phone: string, password: string) => { success: boolean; message?: string };
   logout: () => void;
-  updateUser: (user: User) => void;
+  updateUser: (user: UserData) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
 
   // On mount, check localStorage for saved user
   useEffect(() => {
@@ -41,7 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const foundUser = users.find((u: any) => u.email === email && u.password === password);
 
     if (foundUser) {
-      const userData: User = {
+      const userData: UserData = {
+        id: foundUser.id,
         name: foundUser.name,
         email: foundUser.email,
         phoneNumber: foundUser.phoneNumber,
@@ -63,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const newUser = {
+      id: `user_${Date.now()}`,
       name,
       email,
       phoneNumber: phone,
@@ -73,7 +76,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
-    const userData: User = {
+    const userData: UserData = {
+      id: newUser.id,
       name,
       email,
       phoneNumber: phone,
@@ -92,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('currentUser');
   };
 
-  const updateUser = (updatedUser: User) => {
+  const updateUser = (updatedUser: UserData) => {
     setUser(updatedUser);
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
   };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../utils/authContext';
+
 interface AuthModalsProps {
   isOpen: boolean;
   onClose: () => void;

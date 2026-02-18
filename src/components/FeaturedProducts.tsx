@@ -39,7 +39,7 @@ const products: Product[] = [
   }
 ];
 
-export const FeaturedProducts: React.FC<{ onViewAll?: () => void }> = ({ onViewAll }) => {
+export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick?: (p: any) => void }> = ({ onViewAll, onProductClick }) => {
   const handleViewAll = () => {
     if (onViewAll) {
       onViewAll();
@@ -141,7 +141,7 @@ export const FeaturedProducts: React.FC<{ onViewAll?: () => void }> = ({ onViewA
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <ProductCard product={product} />
+                <ProductCard product={product} onClick={() => onProductClick?.(product)} />
               </motion.div>
             ))}
           </div>

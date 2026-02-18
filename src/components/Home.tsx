@@ -6,11 +6,11 @@ interface HomeProps {
   onViewAllProducts: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ onViewAllProducts }) => {
+export const Home: React.FC<HomeProps & { onProductClick?: (p:any) => void }> = ({ onViewAllProducts, onProductClick }) => {
   return (
     <div className="min-h-screen bg-white">
       <Hero />
-      <FeaturedProducts onViewAll={onViewAllProducts} />
+      <FeaturedProducts onViewAll={onViewAllProducts} onProductClick={onProductClick} />
     </div>
   );
 };
