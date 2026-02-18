@@ -75,9 +75,9 @@ export const useProductFilter = (products: Product[]) => {
   const toggleGenderFilter = useCallback((gender: string) => {
     setFilters(prev => ({
       ...prev,
-      genders: prev.genders.includes(gender)
-        ? prev.genders.filter(g => g !== gender)
-        : [...prev.genders, gender],
+      genders: prev.genders.includes(gender) && prev.genders.length === 1
+        ? []
+        : [gender],
     }));
   }, []);
 

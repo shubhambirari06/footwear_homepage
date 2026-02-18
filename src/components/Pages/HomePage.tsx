@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Header } from '../Navigation/Header';
 import { Footer } from '../Layout/Footer';
@@ -6,6 +6,7 @@ import { Hero } from '../Sections/Hero';
 import { FeaturedProducts } from '../Sections/FeaturedProducts';
 import { CategoryShowcase } from '../Sections/CategoryShowcase';
 import { ProductGrid } from '../Product/ProductGrid';
+import { ProductDetailModal } from '../Product/ProductDetailModal';
 import { ToastManager } from '../Toast/ToastManager';
 import { useAuth } from '../../utils/authContext';
 import { useCart } from '../../hooks/useCart';
@@ -14,13 +15,13 @@ import { useProductFilter } from '../../hooks/useProductFilter';
 import { useToast } from '../../hooks/useToast';
 import { products } from '../../data/index';
 import { Product } from '../../types/index';
+import { ViewType, ToastType } from '../../enums';
+import { WELCOME_MESSAGES, TOAST_DURATION, ROUTE_PATHS } from '../../config/app.config';
 import { Package, MapPin, Phone, Mail, Edit2 } from 'lucide-react';
 
 interface HomePageProps {
   onOpenAuth: (mode: 'login' | 'register') => void;
 }
-
-type ViewType = 'home' | 'search' | 'cart' | 'wishlist' | 'category' | 'profile' | 'orders';
 
 export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
   const { isLoggedIn, user, logout } = useAuth();
@@ -43,15 +44,35 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
   } = useProductFilter(products);
   const { toasts, addToast, removeToast } = useToast();
 
-  const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [currentView, setCurrentView] = useState<ViewType>(ViewType.HOME);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const previousLoginStateRef = useRef(false);
+
+  // Show welcome toast on login
+  useEffect(() => {
+    if (isLoggedIn && !previousLoginStateRef.current) {
+      // User just logged in
+      addToast(
+        `${WELCOME_MESSAGES.LOGIN.TITLE} ${WELCOME_MESSAGES.LOGIN.ICON}`,
+        ToastType.SUCCESS,
+        TOAST_DURATION.MEDIUM
+      );
+      addToast(
+        WELCOME_MESSAGES.LOGIN.MESSAGE,
+        ToastType.INFO,
+        TOAST_DURATION.LONG
+      );
+    }
+    previousLoginStateRef.current = isLoggedIn;
+  }, [isLoggedIn, addToast]);
 
   // Handlers
   const handleSearch = useCallback(
     (query: string) => {
       updateFilter('searchQuery', query);
-      setCurrentView('search');
+      setCurrentView(ViewType.SEARCH);
     },
     [updateFilter]
   );
@@ -59,21 +80,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
   const handleNavigate = useCallback(
     (path: string) => {
       setIsProfileDropdownOpen(false);
-      if (path === '/') {
-        setCurrentView('home');
+      if (path === ROUTE_PATHS.HOME) {
+        setCurrentView(ViewType.HOME);
         resetFilters();
       } else if (path.startsWith('/category/')) {
         const gender = path.split('/')[2];
         toggleGenderFilter(gender);
-        setCurrentView('category');
-      } else if (path === '/cart') {
-        setCurrentView('cart');
-      } else if (path === '/wishlist') {
-        setCurrentView('wishlist');
-      } else if (path === '/profile') {
-        setCurrentView('profile');
+        setCurrentView(ViewType.CATEGORY);
+      } else if (path === ROUTE_PATHS.CART) {
+        setCurrentView(ViewType.CART);
+      } else if (path === ROUTE_PATHS.WISHLIST) {
+        setCurrentView(ViewType.WISHLIST);
+      } else if (path === ROUTE_PATHS.PROFILE) {
+        setCurrentView(ViewType.PROFILE);
       } else if (path === '/orders') {
-        setCurrentView('orders');
+        setCurrentView(ViewType.ORDERS);
       }
     },
     [toggleGenderFilter, resetFilters]
@@ -82,14 +103,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
   const handleLogout = useCallback(() => {
     logout();
     setIsProfileDropdownOpen(false);
-    setCurrentView('home');
-    addToast('Logged out successfully', 'success', 2000);
+    setCurrentView(ViewType.HOME);
+    addToast(
+      WELCOME_MESSAGES.LOGOUT.MESSAGE,
+      ToastType.INFO,
+      TOAST_DURATION.MEDIUM
+    );
   }, [logout, addToast]);
 
   const handleAddToCart = useCallback(
     (product: Product) => {
       addToCart(product, 1);
-      addToast(`Added ${product.name} to cart`, 'success', 2000);
+      addToast(`Added ${product.name} to cart`, ToastType.SUCCESS, 2000);
     },
     [addToCart, addToast]
   );
@@ -106,15 +131,40 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
         isCurrentlyInWishlist
           ? `Removed from wishlist`
           : `Added to wishlist`,
-        'info',
+        ToastType.INFO,
         2000
       );
     },
     [isLoggedIn, toggleWishlist, isInWishlist, onOpenAuth, addToast]
   );
 
+  const handleProductClick = useCallback(
+    (product: Product) => {
+      setSelectedProduct(product);
+      setIsProductDetailOpen(true);
+    },
+    []
+  );
+
+  const handleCloseProductDetail = useCallback(() => {
+    setIsProductDetailOpen(false);
+    setSelectedProduct(null);
+  }, []);
+
+  const handleProductDetailAddToCart = useCallback(
+    (product: Product, quantity: number, size: string) => {
+      addToCart(product, quantity);
+      addToast(
+        `Added ${quantity}x ${product.name} (Size ${size}) to cart`,
+        ToastType.SUCCESS,
+        2000
+      );
+    },
+    [addToCart, addToast]
+  );
+
   const displayProducts = useMemo(() => {
-    if (currentView === 'home') {
+    if (currentView === ViewType.HOME) {
       return products.filter(p => p.isNew).slice(0, 12);
     }
     return filteredProducts;
@@ -124,6 +174,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Toast Notification System */}
       <ToastManager toasts={toasts} onRemove={removeToast} />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isProductDetailOpen}
+        onClose={handleCloseProductDetail}
+        onAddToCart={handleProductDetailAddToCart}
+        onWishlistToggle={handleWishlistToggle}
+        isInWishlist={selectedProduct ? isInWishlist(selectedProduct.id) : false}
+      />
 
       {/* Header - Consistent across all views */}
       <Header
@@ -142,22 +202,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
       {/* Main Content - Changes based on currentView */}
       <main className="flex-grow">
         {/* HOME VIEW */}
-        {currentView === 'home' && (
+        {currentView === ViewType.HOME && (
           <>
             <Hero />
-            <FeaturedProducts onViewAll={() => setCurrentView('category')} />
+            <FeaturedProducts onViewAll={() => setCurrentView(ViewType.CATEGORY)} onProductClick={handleProductClick} />
             <CategoryShowcase
               onCategoryClick={(gender, category) => {
                 toggleGenderFilter(gender);
                 toggleCategoryFilter(category);
-                setCurrentView('category');
+                setCurrentView(ViewType.CATEGORY);
               }}
             />
           </>
         )}
 
         {/* SEARCH & CATEGORY VIEWS */}
-        {(currentView === 'search' || currentView === 'category') && (
+        {(currentView === ViewType.SEARCH || currentView === ViewType.CATEGORY) && (
           <section className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -166,7 +226,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                 className="mb-8"
               >
                 <h1 className="text-4xl font-bold mb-2">
-                  {currentView === 'category' ? 'Browse Products' : 'Search Results'}
+                  {currentView === ViewType.CATEGORY ? 'Browse Products' : 'Search Results'}
                 </h1>
                 <p className="text-neutral-600">
                   Showing {filteredProducts.length} of {products.length} products
@@ -175,7 +235,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
 
               <ProductGrid
                 products={displayProducts}
-                onProductClick={setSelectedProduct}
+                onProductClick={handleProductClick}
                 onAddToCart={handleAddToCart}
                 onWishlistToggle={handleWishlistToggle}
                 isWishlistItem={(id) => isInWishlist(id)}
@@ -185,7 +245,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
         )}
 
         {/* CART VIEW */}
-        {currentView === 'cart' && (
+        {currentView === ViewType.CART && (
           <section className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -204,7 +264,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setCurrentView('category')}
+                      onClick={() => setCurrentView(ViewType.CATEGORY)}
                       className="px-8 py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors"
                     >
                       Start Shopping
@@ -295,7 +355,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                           Proceed to Checkout
                         </motion.button>
                         <button
-                          onClick={() => setCurrentView('category')}
+                          onClick={() => setCurrentView(ViewType.CATEGORY)}
                           className="w-full py-3 mt-3 border border-neutral-300 text-neutral-700 rounded-lg font-medium hover:bg-neutral-50 transition-colors"
                         >
                           Continue Shopping
@@ -310,7 +370,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
         )}
 
         {/* WISHLIST VIEW */}
-        {currentView === 'wishlist' && (
+        {currentView === ViewType.WISHLIST && (
           <section className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -329,7 +389,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setCurrentView('category')}
+                      onClick={() => setCurrentView(ViewType.CATEGORY)}
                       className="px-8 py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors"
                     >
                       Browse Products
@@ -349,7 +409,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
         )}
 
         {/* PROFILE VIEW */}
-        {currentView === 'profile' && (
+        {currentView === ViewType.PROFILE && (
           <section className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -439,7 +499,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                           <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold">Recent Orders</h2>
                             <button
-                              onClick={() => setCurrentView('orders')}
+                              onClick={() => setCurrentView(ViewType.ORDERS)}
                               className="text-amber-700 font-medium hover:underline"
                             >
                               View All
@@ -449,7 +509,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                             <p className="text-neutral-600">No orders yet. Start shopping to place your first order!</p>
                             <motion.button
                               whileHover={{ scale: 1.05 }}
-                              onClick={() => setCurrentView('category')}
+                              onClick={() => setCurrentView(ViewType.CATEGORY)}
                               className="mt-4 px-6 py-2 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors inline-block"
                             >
                               Shop Now
@@ -482,7 +542,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
         )}
 
         {/* ORDERS VIEW */}
-        {currentView === 'orders' && (
+        {currentView === ViewType.ORDERS && (
           <section className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -491,7 +551,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
               >
                 <div className="flex items-center gap-4 mb-8">
                   <button
-                    onClick={() => setCurrentView('profile')}
+                    onClick={() => setCurrentView(ViewType.PROFILE)}
                     className="text-amber-700 font-medium hover:underline"
                   >
                     ← Back to Account

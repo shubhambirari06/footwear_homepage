@@ -15,6 +15,505 @@ export const products: Product[] = [
   // ===== MEN'S CASUAL SHOES =====
   {
     id: 1,
+    name: "Nike Men's Casual Blue Sneaker",
+    brand: 'Nike',
+    price: 9999,
+    description: 'Comfortable blue casual sneaker for everyday wear. Perfect for street style with breathable fabric and responsive cushioning.',
+    image: 'https://images.pexels.com/photos/19090/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.5
+  },
+  {
+    id: 2,
+    name: "Adidas Men's Classic White Shoe",
+    brand: 'Adidas',
+    price: 8999,
+    description: 'Classic white casual sneaker for men. Versatile design works for any occasion, featuring durable rubber sole and premium comfort.',
+    image: 'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.3
+  },
+  {
+    id: 3,
+    name: "Puma Men's Brown Casual Shoes",
+    brand: 'Puma',
+    price: 7899,
+    description: 'Brown casual shoes for men with comfortable sole. Premium quality construction ensures durability and style for daily use.',
+    image: 'https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.2
+  },
+  {
+    id: 4,
+    name: "Reebok Men's Black Casual Sneaker",
+    brand: 'Reebok',
+    price: 7499,
+    description: 'Modern black casual sneaker designed for comfort and style. Features advanced cushioning technology for all-day wear.',
+    image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.4
+  },
+
+  // ===== MEN'S SPORTS SHOES =====
+  {
+    id: 101,
+    name: "Nike Men's Running Sports Shoe",
+    brand: 'Nike',
+    price: 12999,
+    description: 'High-performance running shoe with advanced cushioning. Designed for athletes with superior grip and ankle support.',
+    image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.7
+  },
+  {
+    id: 102,
+    name: "Adidas Men's Training Sports Shoe",
+    brand: 'Adidas',
+    price: 11999,
+    description: 'Professional training shoe for intense workouts. Built with reinforced sides and superior cushioning for maximum performance.',
+    image: 'https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.6
+  },
+  {
+    id: 103,
+    name: "Puma Men's Basketball Sports Shoe",
+    brand: 'Puma',
+    price: 10999,
+    description: 'Basketball-specific design with ankle support and grip technology. Perfect for court play and street sports.',
+    image: 'https://images.pexels.com/photos/1329711/pexels-photo-1329711.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.5
+  },
+  {
+    id: 104,
+    name: "New Balance Men's Running Sports Shoe",
+    brand: 'New Balance',
+    price: 9999,
+    description: 'Lightweight running shoe with responsive cushioning. Engineered for comfort during long distance running sessions.',
+    image: 'https://images.pexels.com/photos/3799830/pexels-photo-3799830.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.4
+  },
+
+  // ===== MEN'S FORMAL SHOES =====
+  {
+    id: 201,
+    name: "Cole Haan Men's Oxford Formal Shoe",
+    brand: 'Cole Haan',
+    price: 14999,
+    description: 'Premium leather oxford shoe perfect for business occasions. Handcrafted with attention to detail and superior comfort.',
+    image: 'https://images.pexels.com/photos/293405/pexels-photo-293405.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.8
+  },
+  {
+    id: 202,
+    name: "Allen Edmonds Men's Derby Formal Shoe",
+    brand: 'Allen Edmonds',
+    price: 13999,
+    description: 'Classic derby formal shoe in rich brown leather. Designed for elegant appearance in professional settings.',
+    image: 'https://images.pexels.com/photos/1926765/pexels-photo-1926765.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.7
+  },
+  {
+    id: 203,
+    name: "Clarks Men's Leather Loafer Shoe",
+    brand: 'Clarks',
+    price: 11999,
+    description: 'Sophisticated leather loafer for semi-formal occasions. Comfortable enough for all-day wear in business settings.',
+    image: 'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Formal',
+    isNew: true,
+    rating: 4.6
+  },
+  {
+    id: 204,
+    name: "Church's Men's Monk Strap Formal Shoe",
+    brand: "Church's",
+    price: 15999,
+    description: 'Exclusive monk strap design in premium leather. Statement piece for formal occasions and sophisticated styling.',
+    image: 'https://images.pexels.com/photos/293405/pexels-photo-293405.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.9
+  },
+
+  // ===== MEN'S SANDALS & FLIP FLOPS =====
+  {
+    id: 301,
+    name: "Birkenstock Men's Arizona Sandal",
+    brand: 'Birkenstock',
+    price: 7999,
+    description: 'Iconic Arizona sandal with contoured footbed. Perfect for casual comfort and long-term wear quality.',
+    image: 'https://images.pexels.com/photos/33853/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.5
+  },
+  {
+    id: 302,
+    name: "Havaianas Men's Flip Flop",
+    brand: 'Havaianas',
+    price: 2999,
+    description: 'Lightweight and comfortable flip flop for casual wear. Perfect for beach and everyday summer activities.',
+    image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sandals',
+    isNew: true,
+    rating: 4.3
+  },
+  {
+    id: 303,
+    name: "Crocs Men's Comfort Clog Sandal",
+    brand: 'Crocs',
+    price: 3999,
+    description: 'Lightweight clog sandal made from proprietary Croslite material. Ultra-comfortable for casual everyday wear.',
+    image: 'https://images.pexels.com/photos/3587620/pexels-photo-3587620.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.2
+  },
+  {
+    id: 304,
+    name: "Skechers Men's Sandal Hydro",
+    brand: 'Skechers',
+    price: 4999,
+    description: 'Water-friendly sandal with cushioned footbed. Great for beach trips and water activities.',
+    image: 'https://images.pexels.com/photos/3797517/pexels-photo-3797517.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Men',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.1
+  },
+
+  // ===== WOMEN'S CASUAL SHOES =====
+  {
+    id: 401,
+    name: "Nike Women's Casual Pink Sneaker",
+    brand: 'Nike',
+    price: 9499,
+    description: 'Trendy pink casual sneaker designed for women. Comfortable fit with stylish design perfect for everyday wear.',
+    image: 'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.6
+  },
+  {
+    id: 402,
+    name: "Adidas Women's Stylish White Shoe",
+    brand: 'Adidas',
+    price: 8499,
+    description: 'Elegant white casual sneaker for women. Features minimalist design that pairs well with any outfit.',
+    image: 'https://images.pexels.com/photos/1055691/pexels-photo-1055691.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.4
+  },
+  {
+    id: 403,
+    name: "Puma Women's Black Casual Shoes",
+    brand: 'Puma',
+    price: 7399,
+    description: 'Sleek black casual shoes designed for modern women. Comfortable and versatile for everyday activities.',
+    image: 'https://images.pexels.com/photos/3622623/pexels-photo-3622623.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.3
+  },
+  {
+    id: 404,
+    name: "Skechers Women's Memory Foam Sneaker",
+    brand: 'Skechers',
+    price: 6999,
+    description: 'Comfortable memory foam sneaker for all-day comfort. Perfect for women who prioritize both style and comfort.',
+    image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.5
+  },
+
+  // ===== WOMEN'S SPORTS SHOES =====
+  {
+    id: 501,
+    name: "Nike Women's Running Sports Shoe",
+    brand: 'Nike',
+    price: 12499,
+    description: 'High-performance running shoe for women athletes. Features advanced cushioning for maximum comfort during workouts.',
+    image: 'https://images.pexels.com/photos/3838550/pexels-photo-3838550.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.7
+  },
+  {
+    id: 502,
+    name: "Adidas Women's Training Sports Shoe",
+    brand: 'Adidas',
+    price: 11499,
+    description: 'Professional training shoe for intense workout sessions. Designed with support and stability for women athletes.',
+    image: 'https://images.pexels.com/photos/3621857/pexels-photo-3621857.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.6
+  },
+  {
+    id: 503,
+    name: "Puma Women's Yoga Sports Shoe",
+    brand: 'Puma',
+    price: 8999,
+    description: 'Lightweight shoe designed for yoga and flexible activities. Provides stability and comfort for various workout styles.',
+    image: 'https://images.pexels.com/photos/3621858/pexels-photo-3621858.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.4
+  },
+  {
+    id: 504,
+    name: "New Balance Women's Cross Training Shoe",
+    brand: 'New Balance',
+    price: 9499,
+    description: 'Versatile cross-training shoe for women. Combines comfort and performance for multiple workout types.',
+    image: 'https://images.pexels.com/photos/3621859/pexels-photo-3621859.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.5
+  },
+
+  // ===== WOMEN'S FORMAL SHOES =====
+  {
+    id: 601,
+    name: "Manolo Blahnik Women's Formal Heel",
+    brand: 'Manolo Blahnik',
+    price: 19999,
+    description: 'Luxurious formal heel for special occasions. Premium craftsmanship and elegant design for sophisticated look.',
+    image: 'https://images.pexels.com/photos/3735651/pexels-photo-3735651.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.9
+  },
+  {
+    id: 602,
+    name: "Jimmy Choo Women's Evening Heel",
+    brand: 'Jimmy Choo',
+    price: 17999,
+    description: 'Glamorous evening heel for formal events. Features stunning design and premium leather construction.',
+    image: 'https://images.pexels.com/photos/3735652/pexels-photo-3735652.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Formal',
+    isNew: true,
+    rating: 4.8
+  },
+  {
+    id: 603,
+    name: "Cole Haan Women's Executive Pump",
+    brand: 'Cole Haan',
+    price: 12999,
+    description: 'Professional pump for business occasions. Combines elegance with all-day comfort for working women.',
+    image: 'https://images.pexels.com/photos/3735653/pexels-photo-3735653.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.7
+  },
+  {
+    id: 604,
+    name: "Stuart Weitzman Women's Formal Sandal",
+    brand: 'Stuart Weitzman',
+    price: 14999,
+    description: 'Elegant formal sandal for sophisticated occasions. Premium materials and refined design.',
+    image: 'https://images.pexels.com/photos/3735654/pexels-photo-3735654.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Formal',
+    isNew: false,
+    rating: 4.6
+  },
+
+  // ===== WOMEN'S SANDALS & FLIP FLOPS =====
+  {
+    id: 701,
+    name: "Birkenstock Women's Arizona Sandal",
+    brand: 'Birkenstock',
+    price: 7499,
+    description: 'Classic Arizona sandal for women with ergonomic design. Perfect for comfortable all-day wear.',
+    image: 'https://images.pexels.com/photos/33853/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.5
+  },
+  {
+    id: 702,
+    name: "Havaianas Women's Flip Flop",
+    brand: 'Havaianas',
+    price: 2499,
+    description: 'Comfortable and colorful flip flop for women. Perfect for beach and casual summer wear.',
+    image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sandals',
+    isNew: true,
+    rating: 4.4
+  },
+  {
+    id: 703,
+    name: "Crocs Women's Comfort Clog",
+    brand: 'Crocs',
+    price: 3499,
+    description: 'Lightweight clog for everyday comfort. Stylish design with superior footbed support.',
+    image: 'https://images.pexels.com/photos/3587620/pexels-photo-3587620.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.3
+  },
+  {
+    id: 704,
+    name: "Skechers Women's Outdoor Sandal",
+    brand: 'Skechers',
+    price: 4499,
+    description: 'Outdoor-ready sandal for adventurous women. Features durable construction and comfortable footbed.',
+    image: 'https://images.pexels.com/photos/3797517/pexels-photo-3797517.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Women',
+    category: 'Sandals',
+    isNew: false,
+    rating: 4.2
+  },
+
+  // ===== KIDS' CASUAL SHOES =====
+  {
+    id: 801,
+    name: "Nike Kids' Colorful Casual Sneaker",
+    brand: 'Nike',
+    price: 4999,
+    description: 'Fun and colorful casual sneaker for kids. Durable construction perfect for active play and everyday wear.',
+    image: 'https://images.pexels.com/photos/3945683/pexels-photo-3945683.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.5
+  },
+  {
+    id: 802,
+    name: "Adidas Kids' Blue Casual Shoe",
+    brand: 'Adidas',
+    price: 4499,
+    description: 'Comfortable blue casual shoe for children. Features grip sole for safety and playful design.',
+    image: 'https://images.pexels.com/photos/3945684/pexels-photo-3945684.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.3
+  },
+  {
+    id: 803,
+    name: "Puma Kids' Red Casual Sneaker",
+    brand: 'Puma',
+    price: 3999,
+    description: 'Sporty red casual sneaker for kids. Lightweight design suitable for running and playing.',
+    image: 'https://images.pexels.com/photos/3945685/pexels-photo-3945685.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Casual',
+    isNew: false,
+    rating: 4.2
+  },
+  {
+    id: 804,
+    name: "Skechers Kids' Light Up Shoe",
+    brand: 'Skechers',
+    price: 5499,
+    description: 'Fun light-up shoe that kids love. Features easy velcro closure for convenience.',
+    image: 'https://images.pexels.com/photos/3945686/pexels-photo-3945686.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Casual',
+    isNew: true,
+    rating: 4.6
+  },
+
+  // ===== KIDS' SPORTS SHOES =====
+  {
+    id: 901,
+    name: "Nike Kids' Running Sports Shoe",
+    brand: 'Nike',
+    price: 6999,
+    description: 'Performance running shoe designed for active kids. Features responsive cushioning and durable construction.',
+    image: 'https://images.pexels.com/photos/3945687/pexels-photo-3945687.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.6
+  },
+  {
+    id: 902,
+    name: "Adidas Kids' Training Sports Shoe",
+    brand: 'Adidas',
+    price: 6499,
+    description: 'Training shoe for kids athletes. Built for stability and comfort during sports activities.',
+    image: 'https://images.pexels.com/photos/3945688/pexels-photo-3945688.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.4
+  },
+  {
+    id: 903,
+    name: "Puma Kids' Basketball Sports Shoe",
+    brand: 'Puma',
+    price: 5999,
+    description: 'Basketball shoe for young players. Features ankle support and grip technology for court play.',
+    image: 'https://images.pexels.com/photos/3945689/pexels-photo-3945689.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Sports',
+    isNew: false,
+    rating: 4.3
+  },
+  {
+    id: 904,
+    name: "New Balance Kids' Casual Sports Shoe",
+    brand: 'New Balance',
+    price: 5499,
+    description: 'Versatile sports shoe for kids. Comfortable enough for daily wear and light athletic activities.',
+    image: 'https://images.pexels.com/photos/3945690/pexels-photo-3945690.jpeg?auto=compress&cs=tinysrgb&w=600',
+    gender: 'Kids',
+    category: 'Sports',
+    isNew: true,
+    rating: 4.5
+  }
+  // ===== MEN'S CASUAL SHOES =====
+  {
+    id: 1,
     name: 'Nike Men\'s Casual Blue Sneaker',
     brand: 'Nike',
     price: 9999,

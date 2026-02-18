@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Search, User, Heart, ShoppingBag, Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { APP_CONFIG, GENDER_CATEGORIES } from '../../config/app.config';
+import { Gender } from '../../enums';
 
 interface UserData {
   id: string;
@@ -80,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }, [isProfileDropdownOpen, onProfileDropdownToggle]);
 
-  const genders = useMemo(() => Object.keys(GENDER_CATEGORIES), []);
+  const genders = useMemo(() => Object.values(Gender), []);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-neutral-200 shadow-sm">

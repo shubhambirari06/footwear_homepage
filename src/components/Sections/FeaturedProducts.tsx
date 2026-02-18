@@ -5,9 +5,10 @@ import { products } from '../../data/index';
 
 interface FeaturedProductsProps {
   onViewAll?: () => void;
+  onProductClick?: (product: any) => void;
 }
 
-export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onViewAll }) => {
+export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onViewAll, onProductClick }) => {
   const featured = useMemo(() => products.slice(0, 8), []);
 
   return (
@@ -37,7 +38,7 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onViewAll })
               transition={{ delay: index * 0.05 }}
               viewport={{ once: true }}
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} onClick={() => onProductClick?.(product)} />
             </motion.div>
           ))}
         </div>
