@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaEye, FaShoppingCart } from 'react-icons/fa';
 import { Product } from '../types/index';
@@ -8,6 +8,24 @@ interface ProductShowcaseProps {
   products: Product[];
   onProductClick: (product: Product) => void;
 }
+
+const ProductImage: React.FC<{ src: string; alt: string; className?: string; style?: React.CSSProperties }> = ({ src, alt, className, style }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <>
+      {!loaded && <div className="position-absolute top-0 start-0 w-100 h-100 bg-light" style={{ opacity: 0.5 }} />}
+      <Card.Img
+        variant="top"
+        src={src}
+        alt={alt}
+        className={className}
+        style={{ ...style, opacity: loaded ? 1 : 0, transition: 'opacity 0.5s ease-in-out' }}
+        onLoad={() => setLoaded(true)}
+      />
+    </>
+  );
+};
 
 const ProductShowcase: React.FC<ProductShowcaseProps> = ({ title = "Featured Products", products, onProductClick }) => {
   return (
@@ -25,8 +43,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ title = "Featured Pro
             <Card className="h-100 shadow-sm border-0 product-card position-relative">
               {/* Product Image Section */}
               <div className="position-relative overflow-hidden bg-light" style={{ height: '250px' }}>
-                <Card.Img
-                  variant="top"
+                <ProductImage
                   src={product.image}
                   alt={product.name}
                   className="w-100 h-100"

@@ -11,6 +11,24 @@ interface CategoryPageProps {
   onAddToCart: (product: Product) => void;
 }
 
+const ProductImage: React.FC<{ src: string; alt: string; className?: string; style?: React.CSSProperties }> = ({ src, alt, className, style }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <>
+      {!loaded && <div className="position-absolute top-0 start-0 w-100 h-100 bg-light" style={{ opacity: 0.5 }} />}
+      <Card.Img
+        variant="top"
+        src={src}
+        alt={alt}
+        className={className}
+        style={{ ...style, opacity: loaded ? 1 : 0, transition: 'opacity 0.5s ease-in-out' }}
+        onLoad={() => setLoaded(true)}
+      />
+    </>
+  );
+};
+
 const CategoryPage: React.FC<CategoryPageProps> = ({
   products,
   gender,
@@ -95,8 +113,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
             <Card className="product-card h-100 border-0 shadow-sm" style={{ cursor: 'pointer' }}>
               {/* Image Container */}
               <div className="position-relative overflow-hidden" style={{ height: '250px', background: '#f8f9fa' }}>
-                <Card.Img
-                  variant="top"
+                <ProductImage
                   src={product.image}
                   alt={product.name}
                   className="h-100"

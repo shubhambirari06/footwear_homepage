@@ -186,6 +186,10 @@ const menCategories = ['Casual', 'Sports', 'Formal', 'Sandals', 'Flip Flops', 'E
 const womenCategories = ['Casual', 'Sports', 'Formal', 'Heels', 'Sandals', 'Flip Flops'];
 const kidsCategories = ['Casual', 'Sports', 'School Shoes', 'Flip Flops'];
 
+const MEN_IMAGE_COUNT = 30;
+const WOMEN_IMAGE_COUNT = 30;
+const KIDS_IMAGE_COUNT = 15;
+
 // Comprehensive product generator
 const generateProducts = (): Product[] => {
   const products: Product[] = [];
@@ -200,6 +204,7 @@ const generateProducts = (): Product[] => {
     const price = Math.round(3000 + (i % 30) * 300 + Math.random() * 2000);
     const rating = parseFloat((3.5 + (i % 20) * 0.1).toFixed(1));
     const stock = Math.floor(Math.random() * 50) + 10;
+    const imageIndex = Math.floor(Math.random() * MEN_IMAGE_COUNT) + 1;
 
     products.push({
       id,
@@ -207,7 +212,7 @@ const generateProducts = (): Product[] => {
       brand,
       price,
       description,
-      image: `/Images/men/men_${(i % 50) + 1}.jpg`,
+      image: `/Images/Men/men_${imageIndex}.jpg`,
       gender: 'Men',
       category,
       isNew: i % 8 === 0,
@@ -226,6 +231,7 @@ const generateProducts = (): Product[] => {
     const price = Math.round(3500 + (i % 30) * 350 + Math.random() * 2500);
     const rating = parseFloat((3.6 + (i % 20) * 0.1).toFixed(1));
     const stock = Math.floor(Math.random() * 50) + 10;
+    const imageIndex = Math.floor(Math.random() * WOMEN_IMAGE_COUNT) + 1;
 
     products.push({
       id,
@@ -233,7 +239,7 @@ const generateProducts = (): Product[] => {
       brand,
       price,
       description,
-      image: `/Images/women/women_${(i % 45) + 1}.jpg`,
+      image: `/Images/Women/women_${imageIndex}.jpg`,
       gender: 'Women',
       category,
       isNew: i % 7 === 0,
@@ -251,6 +257,7 @@ const generateProducts = (): Product[] => {
     const price = Math.round(2000 + (i % 20) * 250 + Math.random() * 1500);
     const rating = parseFloat((3.7 + (i % 15) * 0.1).toFixed(1));
     const stock = Math.floor(Math.random() * 40) + 5;
+    const imageIndex = Math.floor(Math.random() * KIDS_IMAGE_COUNT) + 1;
 
     products.push({
       id,
@@ -258,7 +265,7 @@ const generateProducts = (): Product[] => {
       brand,
       price,
       description,
-      image: `/Images/kids/kids_${(i % 25) + 1}.jpg`,
+      image: `/Images/Kids/kids_${imageIndex}.jpg`,
       gender: 'Kids',
       category,
       isNew: i % 6 === 0,

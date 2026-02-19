@@ -25,10 +25,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isShared, setIsShared] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setQuantity(1);
     setSelectedSize(null);
+    setImageLoaded(false);
   }, [product]);
 
   if (!product) return null;
@@ -69,18 +71,22 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            onClick={onClose}
           >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div 
+              className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Close Button */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -99,10 +105,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   className="flex flex-col gap-4"
                 >
                   <div className="relative bg-neutral-50 rounded-lg overflow-hidden aspect-square group">
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 bg-neutral-200 animate-pulse" />
+                    )}
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      onLoad={() => setImageLoaded(true)}
+                      className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
+                        imageLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
                     />
 
                     {/* New Badge */}
