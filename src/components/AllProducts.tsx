@@ -20,6 +20,8 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'rating'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
   const genders = Array.from(new Set(products.map(p => p.gender).filter(Boolean)));
   const categories = Array.from(new Set(products.map(p => p.category)));
@@ -56,6 +58,18 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
 
     return result;
   }, [selectedGender, selectedCategory, priceRange, searchQuery, sortBy]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + productsPerPage);
+  }, [filteredProducts, currentPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <>
@@ -228,7 +242,7 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
 
           {/* Products Grid */}
           <div className="col-span-1 md:col-span-3">
-            {filteredProducts.length > 0 ? (
+            {paginatedProducts.length > 0 ? (
               <>
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -236,11 +250,11 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                   className="mb-6"
                 >
                   <p className="text-sm text-neutral-600">
-                    Showing <span className="font-bold text-neutral-900">{filteredProducts.length}</span> of <span className="font-bold text-neutral-900">{products.length}</span> products
+                    Showing <span className="font-bold text-neutral-900">{paginatedProducts.length}</span> of <span className="font-bold text-neutral-900">{filteredProducts.length}</span> products
                   </p>
                 </motion.div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredProducts.map((product, index) => (
+                  {paginatedProducts.map((product, index) => (
                     <motion.div
                       key={product.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -252,6 +266,33 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center items-center gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </motion.button>
+                    <span className="text-sm text-neutral-600">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </motion.button>
+                  </div>
+                )}
               </>
             ) : (
               <motion.div

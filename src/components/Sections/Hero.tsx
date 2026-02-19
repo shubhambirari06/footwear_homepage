@@ -29,7 +29,7 @@ export const Hero: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="inline-block px-4 py-2 bg-amber-700/80 text-white text-xs font-bold uppercase tracking-widest rounded-full mb-6"
           >
-            New Collection 2025
+            New Collection 2026
           </motion.span>
 
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">

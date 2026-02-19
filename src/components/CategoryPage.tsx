@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaFilter, FaSortAmountDown } from 'react-icons/fa';
 import { Product } from '../types';
@@ -18,6 +18,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
   onBack,
   onAddToCart
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
+
   // Filter products by gender and category
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -26,6 +29,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
       return genderMatch && categoryMatch;
     });
   }, [products, gender, subcategory]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + productsPerPage);
+  }, [filteredProducts, currentPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (filteredProducts.length === 0) {
     return (
@@ -59,7 +74,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
               {gender} {subcategory}
             </h1>
             <p className="text-muted mb-0">
-              Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+              Showing {paginatedProducts.length} of {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
             </p>
           </div>
           <div className="d-flex gap-2">
@@ -75,7 +90,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
 
       {/* Products Grid */}
       <Row className="g-4">
-        {filteredProducts.map((product) => (
+        {paginatedProducts.map((product) => (
           <Col md={6} lg={4} xl={3} key={product.id} className="slide-up">
             <Card className="product-card h-100 border-0 shadow-sm" style={{ cursor: 'pointer' }}>
               {/* Image Container */}
@@ -125,6 +140,31 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
           </Col>
         ))}
       </Row>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-5 d-flex justify-content-center align-items-center gap-2">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span className="text-muted small">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </Container>
   );
 };
