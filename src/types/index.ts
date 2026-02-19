@@ -47,6 +47,29 @@ export interface FilterOptions {
 
 export type SortOption = 'newest' | 'price-low' | 'price-high' | 'rating';
 
+export interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  helpful: number;
+}
+
+export interface OrderTracking {
+  orderId: string;
+  status: 'Processing' | 'Shipped' | 'In Transit' | 'Delivered' | 'Returned';
+  estimatedDelivery: string;
+  trackingNumber: string;
+  carrier: string;
+  updates: {
+    date: string;
+    status: string;
+    location: string;
+  }[];
+}
+
 export interface CategoryConfig {
   [key: string]: {
     name: string;

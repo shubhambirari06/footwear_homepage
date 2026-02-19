@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Nav, Tab, Badge, Button, Table } from 'react-bootstrap';
-import { FaUser, FaShoppingBag, FaSignOutAlt, FaArrowLeft, FaBoxOpen } from 'react-icons/fa';
-import { User } from '../types';
+import { FaUser, FaShoppingBag, FaSignOutAlt, FaArrowLeft } from 'react-icons/fa';
+import { User } from '../types/index';
 
 export interface Order {
   id: string;

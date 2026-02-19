@@ -15,13 +15,13 @@ export const FEATURED_CATEGORIES = [
   {
     name: 'Running Shoes',
     image:
-      'https://images.unsplash.com/photo-1768647417374-5a31c61dc5d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBydW5uaW5nJTIwc2hvZXMlMjBjbG9zZSUyMHVwfGVufDF8fHx8MTc3MTQxNDAxMHww&ixlib=rb-4.1.0&q=80&w=800',
+      'https://images.unsplash.com/photo-1768647417374-5a31c61dc5d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
     gridSpan: 'col-span-1 md:col-span-2',
   },
   {
     name: 'Boots',
     image:
-      'https://images.unsplash.com/photo-1763661300203-aa3e2702f510?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHlsaXNoJTIwbGVhdGhlciUyMGJvb3RzJTIwZmFzaGlvbnxlbnwxfHx8fDE3NzExMzkyOTN8MA&ixlib=rb-4.1.0&q=80&w=800',
+      'https://images.unsplash.com/photo-1763661300203-aa3e2702f510?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
     gridSpan: 'col-span-1 md:col-span-2',
   },
   {
@@ -38,205 +38,242 @@ export const FEATURED_CATEGORIES = [
   },
 ];
 
-export const products: Product[] = [
-  {
-    id: 1,
-    name: 'Nike Revolution Running Shoe',
-    brand: 'Nike',
-    price: 4999,
-    description: 'Comfortable running shoe for everyday fitness. Lightweight and supportive.',
-    image:
-      'https://images.unsplash.com/photo-1768647417374-5a31c61dc5d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Sports',
-    isNew: true,
-    rating: 4.5,
-    stock: 45,
-  },
-  {
-    id: 2,
-    name: 'Adidas Ultraboost Pro',
-    brand: 'Adidas',
-    price: 12999,
-    description: 'Premium running shoe with advanced cushioning technology for maximum comfort.',
-    image:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Sports',
-    isNew: true,
-    rating: 4.7,
-    stock: 32,
-  },
-  {
-    id: 3,
-    name: 'Casual Canvas Sneaker - White',
-    brand: 'Puma',
-    price: 3499,
-    description: 'Classic white canvas sneaker perfect for everyday casual wear.',
-    image:
-      'https://images.unsplash.com/photo-1595341888016-d21b0ea51f8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Casual',
-    rating: 4.3,
-    stock: 78,
-  },
-  {
-    id: 4,
-    name: 'Formal Office Shoe - Black',
-    brand: 'Lee Cooper',
-    price: 6999,
-    description: 'Elegant black formal shoe suitable for office and business occasions.',
-    image:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Formal',
-    rating: 4.4,
-    stock: 25,
-  },
-  {
-    id: 5,
-    name: 'Gold Heel Pumps',
-    brand: 'Clarks',
-    price: 7999,
-    description: 'Stylish gold heels perfect for parties and formal events.',
-    image:
-      'https://images.unsplash.com/photo-1609689589569-4b7ae0e45348?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Heels',
-    isNew: true,
-    rating: 4.6,
-    stock: 18,
-  },
-  {
-    id: 6,
-    name: 'Women\'s Sports Running Shoe',
-    brand: 'Nike',
-    price: 5999,
-    description: 'Lightweight and breathable running shoe designed for women athletes.',
-    image:
-      'https://images.unsplash.com/photo-1540639484905-3a97ed2f4450?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Sports',
-    rating: 4.5,
-    stock: 56,
-  },
-  {
-    id: 7,
-    name: 'Casual Loafers - Brown',
-    brand: 'Woodland',
-    price: 5499,
-    description: 'Comfortable brown loafers for casual everyday wear.',
-    image:
-      'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Casual',
-    rating: 4.2,
-    stock: 42,
-  },
-  {
-    id: 8,
-    name: 'Kids School Shoe',
-    brand: 'Bata',
-    price: 1999,
-    description: 'Durable school shoe for kids with proper support and comfort.',
-    image:
-      'https://images.unsplash.com/photo-1596521626265-47f5fcd02b81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Kids',
-    category: 'School Shoes',
-    rating: 4.3,
-    stock: 89,
-  },
-  {
-    id: 9,
-    name: 'Premium Leather Boots',
-    brand: 'Timberland',
-    price: 14999,
-    description: 'Premium quality leather boots ideal for rough terrain and all-weather use.',
-    image:
-      'https://images.unsplash.com/photo-1763661300203-aa3e2702f510?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Formal',
-    isNew: true,
-    rating: 4.8,
-    stock: 15,
-  },
-  {
-    id: 10,
-    name: 'Comfortable Flip Flop - Blue',
-    brand: 'Paragon',
-    price: 799,
-    description: 'Lightweight and comfortable flip flop for casual beach wear.',
-    image:
-      'https://images.unsplash.com/photo-1604671828674-2ae418e43e7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Flip Flops',
-    rating: 4.1,
-    stock: 120,
-  },
-  {
-    id: 11,
-    name: 'Women\'s Formal Black Shoe',
-    brand: 'Clarks',
-    price: 7499,
-    description: 'Elegant black formal shoe with premium comfort for women professionals.',
-    image:
-      'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Formal',
-    rating: 4.6,
-    stock: 28,
-  },
-  {
-    id: 12,
-    name: 'Ethnic Juttis - Gold',
-    brand: 'Mojri',
-    price: 2499,
-    description: 'Traditional ethnic juttis with gold embroidery for special occasions.',
-    image:
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Ethnic',
-    rating: 4.4,
-    stock: 22,
-  },
-  {
-    id: 13,
-    name: 'Kids Sport Sneaker',
-    brand: 'Nike',
-    price: 3999,
-    description: 'Fun and colorful sports sneaker designed for active kids.',
-    image:
-      'https://images.unsplash.com/photo-1596521626265-47f5fcd02b81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Kids',
-    category: 'Sports',
-    isNew: true,
-    rating: 4.5,
-    stock: 54,
-  },
-  {
-    id: 14,
-    name: 'Comfortable Sandals',
-    brand: 'Bata',
-    price: 1499,
-    description: 'Easy-to-wear sandals perfect for summers and casual outings.',
-    image:
-      'https://images.unsplash.com/photo-1604671828674-2ae418e43e7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Women',
-    category: 'Sandals',
-    rating: 4.2,
-    stock: 95,
-  },
-  {
-    id: 15,
-    name: 'Premium Casual Loafer',
-    brand: 'Skechers',
-    price: 6499,
-    description: 'Premium loafer with memory foam for ultimate comfort in casual settings.',
-    image:
-      'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
-    gender: 'Men',
-    category: 'Casual',
-    rating: 4.5,
-    stock: 38,
-  },
+// Comprehensive product descriptions for realistic e-commerce data
+const menDescriptions: Record<string, string[]> = {
+  'Casual': [
+    'Comfortable everyday casual shoe with breathable fabric and premium comfort cushioning',
+    'Modern design casual sneaker perfect for street style and urban fashion',
+    'Lightweight casual shoe for all-day comfort with responsive sole technology',
+    'Premium casual footwear with enhanced arch support and durable construction',
+    'Classic casual shoe with superior grip sole and long-lasting durability',
+    'Sporty casual sneaker with responsive cushioning and breathable mesh lining',
+    'Elegant casual shoe for professional settings with timeless design appeal',
+    'Urban casual footwear with contemporary design and advanced materials',
+  ],
+  'Sports': [
+    'High-performance running shoe with advanced cushioning technology and ankle support',
+    'Professional training shoe for intense workouts with superior grip and stability',
+    'Basketball shoe with ankle support and advanced grip technology for courts',
+    'Running shoe designed for distance and speed with responsive midsole',
+    'Cross-training shoe perfect for multiple workout types and fitness activities',
+    'Athletic shoe with responsive midsole technology and breathable upper design',
+    'Performance shoe for outdoor sports with waterproof and durable materials',
+    'Lightweight athletics shoe designed for track and field competitions',
+  ],
+  'Formal': [
+    'Classic formal shoe perfect for business occasions and corporate settings',
+    'Premium leather formal shoe crafted for professional environments',
+    'Elegant formal footwear designed for special occasions and formal events',
+    'Sophisticated oxford shoe in rich brown leather with premium finishing',
+    'Professional formal shoe with superior comfort for all-day wear',
+    'Classic formal loafer perfect for business wear and formal gatherings',
+    'Formal dress shoe with handcrafted details and premium leather construction',
+    'Premium formal shoe with Italian leather and expert craftsmanship',
+  ],
+  'Sandals': [
+    'Comfortable sandal with ergonomic design and cushioned footbed for all-day wear',
+    'Lightweight sandal perfect for casual wear with breathable design',
+    'Durable sandal with cushioned footbed and non-slip sole technology',
+    'Water-friendly sandal perfect for beach and pool activities',
+    'Casual sandal with stylish design and comfortable fit',
+    'Comfortable slide sandal for everyday use with premium materials',
+    'Premium sandal with excellent arch support and orthopedic design',
+    'Breathable sandal perfect for summer wear with quick-dry properties',
+  ],
+  'Flip Flops': [
+    'Lightweight flip flop for casual comfort with soft cushioned footbed',
+    'Durable flip flop with premium soft sole and long-lasting materials',
+    'Casual flip flop perfect for beach and poolside activities',
+    'Comfortable flip flop for everyday wear with ergonomic design',
+    'Premium flip flop with enhanced cushioning and arch support features',
+    'Water-friendly flip flop ideal for pool and beach use',
+    'Stylish flip flop with modern design and comfortable fit',
+    'Comfort flip flop with non-slip sole and quick-dry capabilities',
+  ],
+  'Ethnic': [
+    'Traditional ethnic shoe handcrafted with quality materials and authentic design',
+    'Authentic ethnic footwear perfect for cultural occasions and celebrations',
+    'Premium ethnic shoe designed for special celebrations and weddings',
+    'Traditional design ethnic shoe with elegant and intricate details',
+    'Formal ethnic footwear perfect for traditional wear and festivals',
+    'Classic ethnic shoe crafted with authentic materials and techniques',
+    'Premium ethnic footwear with traditional craftsmanship and style',
+    'Elegant ethnic shoe with intricate embellishments and cultural authenticity',
+  ],
+};
+
+const womenDescriptions: Record<string, string[]> = {
+  'Casual': [
+    'Trendy casual sneaker perfect for everyday wear and street fashion',
+    'Comfortable casual shoe with stylish design and premium cushioning',
+    'Modern casual footwear with excellent comfort and contemporary style',
+    'Elegant casual shoe perfect for professional and casual settings',
+    'Lightweight casual sneaker designed for active lifestyle and comfort',
+    'Stylish casual shoe with contemporary design and fashion appeal',
+    'Premium casual footwear with enhanced cushioning and breathable materials',
+    'Versatile casual shoe perfect for any occasion with timeless design',
+  ],
+  'Sports': [
+    'High-performance running shoe designed specifically for women athletes',
+    'Professional training shoe perfect for gym workouts and fitness activities',
+    'Lightweight sports shoe with responsive cushioning and ankle support',
+    'Athletic shoe designed for intense sports activities and workouts',
+    'Yoga and fitness shoe with flexibility support and comfort design',
+    'Cross-training shoe perfect for multiple workout types and fitness needs',
+    'Performance sports shoe with excellent ankle support and stability',
+    'Women\'s running shoe with superior grip technology and cushioning',
+  ],
+  'Formal': [
+    'Elegant formal heel perfect for special occasions and evening events',
+    'Professional formal shoe designed for business wear and office settings',
+    'Classic formal pump with sophisticated design and comfortable fit',
+    'Premium formal footwear with superior comfort and elegant appearance',
+    'Elegant formal shoe ideal for evening events and formal gatherings',
+    'Professional formal loafer perfect for business settings and office wear',
+    'Classic formal shoe crafted with premium materials and expert design',
+    'Sophisticated formal heel perfect for special occasions and celebrations',
+  ],
+  'Heels': [
+    'Stunning party heel perfect for special celebrations and fashion events',
+    'Glamorous gold strappy heel ideal for evening wear and celebrations',
+    'Elegant high heel designed for formal occasions and special events',
+    'Stylish heel perfect for making statement looks and fashion statements',
+    'Comfortable heels with cushioned footbed for extended wear',
+    'Premium heels with superior arch support and stability design',
+    'Modern heel with contemporary design and fashion-forward style',
+    'Classic heel offering timeless elegance and sophisticated appeal',
+  ],
+  'Sandals': [
+    'Iconic sandal with famous ergonomic footbed design for comfort',
+    'Comfortable sandal perfect for all-day wear with cushioned support',
+    'Stylish sandal designed for casual outings and beach activities',
+    'Casual sandal with beach-ready design and quick-dry properties',
+    'Lightweight sandal with modern style and comfortable fit',
+    'Durable sandal with superior comfort and long-lasting materials',
+    'Fashion sandal perfect for warm weather and casual wear',
+    'Comfortable sandal with excellent arch support and cushioning',
+  ],
+  'Flip Flops': [
+    'Comfortable flip flop designed for casual wear and everyday use',
+    'Stylish flip flop with elegant design and fashion appeal',
+    'Lightweight flip flop perfect for beach activities and vacations',
+    'Durable flip flop with cushioned sole and premium materials',
+    'Premium flip flop with enhanced comfort and quality construction',
+    'Casual flip flop with modern style and comfortable fit',
+    'Lightweight flip flop ideal for summer seasons and warm weather',
+    'Comfortable flip flop perfect for everyday casual wear',
+  ],
+};
+
+const kidsDescriptions = [
+  'Fun and colorful shoe perfect for active play and outdoor activities',
+  'Comfortable shoe with secure grip sole for safe outdoor play',
+  'Lightweight shoe designed for kids\' activities with durable materials',
+  'Durable shoe perfect for everyday play and sports activities',
+  'Fun design shoe that kids love with vibrant colors and patterns',
+  'Comfortable shoe with extra cushioning for protected play time',
+  'Light-up shoe with exciting LED features that kids absolutely love',
+  'Durable school shoe perfect for daily wear and school activities',
+  'Colorful athletic shoe designed for active kids and sports',
+  'Supportive shoe with arch support for developing feet',
 ];
+
+const menBrands = ['Nike', 'Adidas', 'Puma', 'Reebok', 'New Balance', 'Cole Haan', 'Clarks', 'Hush Puppies', 'Skechers', 'Crocs'];
+const womenBrands = ['Nike', 'Adidas', 'Puma', 'Steve Madden', 'Jimmy Choo', 'ALDO', 'Clarks', 'Bata', 'Stuart Weitzman', 'Cole Haan'];
+const kidsBrands = ['Nike', 'Adidas', 'Puma', 'Reebok', 'Skechers', 'Crocs', 'Bata', 'Liberty'];
+
+const menCategories = ['Casual', 'Sports', 'Formal', 'Sandals', 'Flip Flops', 'Ethnic'];
+const womenCategories = ['Casual', 'Sports', 'Formal', 'Heels', 'Sandals', 'Flip Flops'];
+const kidsCategories = ['Casual', 'Sports', 'School Shoes', 'Flip Flops'];
+
+// Comprehensive product generator
+const generateProducts = (): Product[] => {
+  const products: Product[] = [];
+  let id = 1;
+
+  // Generate Men's Products (50 total)
+  for (let i = 0; i < 50; i++) {
+    const category = menCategories[i % menCategories.length];
+    const brand = menBrands[i % menBrands.length];
+    const descriptions = menDescriptions[category];
+    const description = descriptions[i % descriptions.length];
+    const price = Math.round(3000 + (i % 30) * 300 + Math.random() * 2000);
+    const rating = parseFloat((3.5 + (i % 20) * 0.1).toFixed(1));
+    const stock = Math.floor(Math.random() * 50) + 10;
+
+    products.push({
+      id,
+      name: `${brand} Men's ${category} Shoe ${i + 1}`,
+      brand,
+      price,
+      description,
+      image: `/Images/men/men_${(i % 50) + 1}.jpg`,
+      gender: 'Men',
+      category,
+      isNew: i % 8 === 0,
+      rating,
+      stock,
+    });
+    id++;
+  }
+
+  // Generate Women's Products (45 total)
+  for (let i = 0; i < 45; i++) {
+    const category = womenCategories[i % womenCategories.length];
+    const brand = womenBrands[i % womenBrands.length];
+    const descriptions = womenDescriptions[category];
+    const description = descriptions[i % descriptions.length];
+    const price = Math.round(3500 + (i % 30) * 350 + Math.random() * 2500);
+    const rating = parseFloat((3.6 + (i % 20) * 0.1).toFixed(1));
+    const stock = Math.floor(Math.random() * 50) + 10;
+
+    products.push({
+      id,
+      name: `${brand} Women's ${category} Shoe ${i + 1}`,
+      brand,
+      price,
+      description,
+      image: `/Images/women/women_${(i % 45) + 1}.jpg`,
+      gender: 'Women',
+      category,
+      isNew: i % 7 === 0,
+      rating,
+      stock,
+    });
+    id++;
+  }
+
+  // Generate Kids' Products (25 total)
+  for (let i = 0; i < 25; i++) {
+    const category = kidsCategories[i % kidsCategories.length];
+    const brand = kidsBrands[i % kidsBrands.length];
+    const description = kidsDescriptions[i % kidsDescriptions.length];
+    const price = Math.round(2000 + (i % 20) * 250 + Math.random() * 1500);
+    const rating = parseFloat((3.7 + (i % 15) * 0.1).toFixed(1));
+    const stock = Math.floor(Math.random() * 40) + 5;
+
+    products.push({
+      id,
+      name: `${brand} Kids' ${category} Shoe ${i + 1}`,
+      brand,
+      price,
+      description,
+      image: `/Images/kids/kids_${(i % 25) + 1}.jpg`,
+      gender: 'Kids',
+      category,
+      isNew: i % 6 === 0,
+      rating,
+      stock,
+    });
+    id++;
+  }
+
+  return products;
+};
+
+export const products: Product[] = generateProducts();
+
+// Backwards-compatible exports used across the app
+export const categories = CATEGORIES;
+export const logo = '/logo.png';
+export const featuredCategories = FEATURED_CATEGORIES;

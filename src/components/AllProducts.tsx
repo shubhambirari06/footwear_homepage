@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Filter, X, ChevronDown, ArrowLeft } from 'lucide-react';
-import { products } from '../data';
-import { Product } from '../types';
+import { Filter, X, ArrowLeft } from 'lucide-react';
+import { products } from '../data/index';
+import { Product } from '../types/index';
 import { ProductCard } from './ProductCard';
 import { ProductDetailModal } from './Product/ProductDetailModal';
 import { Footer } from './Footer';
@@ -14,9 +14,9 @@ interface AllProductsProps {
 export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'rating'>('newest');
@@ -25,23 +25,31 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
 
   const genders = Array.from(new Set(products.map(p => p.gender).filter(Boolean)));
   const categories = Array.from(new Set(products.map(p => p.category)));
+  const brands = Array.from(new Set(products.map(p => p.brand)));
 
   const filteredProducts = useMemo(() => {
-    let result = products;
+    let result = [...products];
 
-    if (selectedGender) {
-      result = result.filter(p => p.gender === selectedGender);
+    if (selectedGenders.length > 0) {
+      result = result.filter(p => selectedGenders.includes(p.gender));
     }
 
-    if (selectedCategory) {
-      result = result.filter(p => p.category === selectedCategory);
+    if (selectedCategories.length > 0) {
+      result = result.filter(p => selectedCategories.includes(p.category));
+    }
+
+    if (selectedBrands.length > 0) {
+      result = result.filter(p => selectedBrands.includes(p.brand));
     }
 
     result = result.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
-    if (searchQuery) {
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.brand.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query)
       );
     }
 
@@ -57,18 +65,26 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
     }
 
     return result;
-  }, [selectedGender, selectedCategory, priceRange, searchQuery, sortBy]);
+  }, [selectedGenders, selectedCategories, selectedBrands, priceRange, searchQuery, sortBy]);
 
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * productsPerPage;
     return filteredProducts.slice(startIndex, startIndex + productsPerPage);
   }, [filteredProducts, currentPage]);
 
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const toggleFilter = (item: string, selected: string[], setSelected: (val: string[]) => void) => {
+    if (selected.includes(item)) {
+      setSelected(selected.filter(i => i !== item));
+    } else {
+      setSelected([...selected, item]);
+    }
+    setCurrentPage(1);
   };
 
   return (
@@ -97,13 +113,19 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                   type="text"
                   placeholder="Search products..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="w-full px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:border-amber-700 transition-colors"
                 />
               </div>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => {
+                  setSortBy(e.target.value as any);
+                  setCurrentPage(1);
+                }}
                 className="px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:border-amber-700 transition-colors"
               >
                 <option value="newest">Newest</option>
@@ -149,24 +171,13 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                   <div className="mb-6 pb-6 border-b border-neutral-200">
                     <h4 className="font-bold text-xs uppercase tracking-widest mb-3 text-neutral-700">Gender</h4>
                     <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer hover:text-amber-700 transition-colors">
-                        <input
-                          type="radio"
-                          name="gender"
-                          checked={selectedGender === null}
-                          onChange={() => setSelectedGender(null)}
-                          className="cursor-pointer accent-amber-700"
-                        />
-                        <span className="text-sm">All</span>
-                      </label>
                       {genders.map(gender => (
                         <label key={gender} className="flex items-center gap-2 cursor-pointer hover:text-amber-700 transition-colors">
                           <input
-                            type="radio"
-                            name="gender"
-                            checked={selectedGender === gender}
-                            onChange={() => setSelectedGender(gender)}
-                            className="cursor-pointer accent-amber-700"
+                            type="checkbox"
+                            checked={selectedGenders.includes(gender)}
+                            onChange={() => toggleFilter(gender, selectedGenders, setSelectedGenders)}
+                            className="cursor-pointer accent-amber-700 rounded"
                           />
                           <span className="text-sm">{gender}</span>
                         </label>
@@ -178,26 +189,33 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                   <div className="mb-6 pb-6 border-b border-neutral-200">
                     <h4 className="font-bold text-xs uppercase tracking-widest mb-3 text-neutral-700">Category</h4>
                     <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer hover:text-amber-700 transition-colors">
-                        <input
-                          type="radio"
-                          name="category"
-                          checked={selectedCategory === null}
-                          onChange={() => setSelectedCategory(null)}
-                          className="cursor-pointer accent-amber-700"
-                        />
-                        <span className="text-sm">All</span>
-                      </label>
                       {categories.map(category => (
                         <label key={category} className="flex items-center gap-2 cursor-pointer hover:text-amber-700 transition-colors">
                           <input
-                            type="radio"
-                            name="category"
-                            checked={selectedCategory === category}
-                            onChange={() => setSelectedCategory(category)}
-                            className="cursor-pointer accent-amber-700"
+                            type="checkbox"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => toggleFilter(category, selectedCategories, setSelectedCategories)}
+                            className="cursor-pointer accent-amber-700 rounded"
                           />
                           <span className="text-sm">{category}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Brand Filter */}
+                  <div className="mb-6 pb-6 border-b border-neutral-200">
+                    <h4 className="font-bold text-xs uppercase tracking-widest mb-3 text-neutral-700">Brand</h4>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {brands.map(brand => (
+                        <label key={brand} className="flex items-center gap-2 cursor-pointer hover:text-amber-700 transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={selectedBrands.includes(brand)}
+                            onChange={() => toggleFilter(brand, selectedBrands, setSelectedBrands)}
+                            className="cursor-pointer accent-amber-700 rounded"
+                          />
+                          <span className="text-sm">{brand}</span>
                         </label>
                       ))}
                     </div>
@@ -213,7 +231,10 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                         max="15000"
                         step="1000"
                         value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                        onChange={(e) => {
+                          setPriceRange([priceRange[0], parseInt(e.target.value)]);
+                          setCurrentPage(1);
+                        }}
                         className="w-full accent-amber-700"
                       />
                       <div className="text-sm text-neutral-600 font-medium">
@@ -226,10 +247,13 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setSelectedGender(null);
-                      setSelectedCategory(null);
+                      setSelectedGenders([]);
+                      setSelectedCategories([]);
+                      setSelectedBrands([]);
                       setPriceRange([0, 15000]);
                       setSearchQuery('');
+                      setSortBy('newest');
+                      setCurrentPage(1);
                     }}
                     className="w-full py-2 border border-neutral-300 rounded-lg text-sm font-bold hover:bg-neutral-100 transition-colors"
                   >
@@ -253,7 +277,7 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                     Showing <span className="font-bold text-neutral-900">{paginatedProducts.length}</span> of <span className="font-bold text-neutral-900">{filteredProducts.length}</span> products
                   </p>
                 </motion.div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                   {paginatedProducts.map((product, index) => (
                     <motion.div
                       key={product.id}
@@ -269,25 +293,42 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="mt-12 flex justify-center items-center gap-4">
+                  <div className="flex justify-center items-center gap-4 py-8 border-t border-neutral-200">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       disabled={currentPage === 1}
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed hover:border-amber-700 transition-colors"
                     >
                       Previous
                     </motion.button>
-                    <span className="text-sm text-neutral-600">
-                      Page {currentPage} of {totalPages}
-                    </span>
+
+                    {/* Page Numbers */}
+                    <div className="flex gap-2 flex-wrap justify-center">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <motion.button
+                          key={page}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${
+                            currentPage === page
+                              ? 'bg-amber-700 text-white'
+                              : 'bg-white border border-neutral-300 text-neutral-700 hover:border-amber-700'
+                          }`}
+                        >
+                          {page}
+                        </motion.button>
+                      ))}
+                    </div>
+
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       disabled={currentPage === totalPages}
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-bold text-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed hover:border-amber-700 transition-colors"
                     >
                       Next
                     </motion.button>
@@ -303,10 +344,13 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                 <p className="text-neutral-600 text-lg mb-4">No products found matching your filters</p>
                 <button
                   onClick={() => {
-                    setSelectedGender(null);
-                    setSelectedCategory(null);
+                    setSelectedGenders([]);
+                    setSelectedCategories([]);
+                    setSelectedBrands([]);
                     setPriceRange([0, 15000]);
                     setSearchQuery('');
+                    setSortBy('newest');
+                    setCurrentPage(1);
                   }}
                   className="px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-bold"
                 >

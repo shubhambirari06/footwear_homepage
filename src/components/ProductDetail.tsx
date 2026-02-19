@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Row, Col, Form, Badge, Card, ListGroup } from 'react-bootstrap';
 import { FaShoppingCart, FaHeart, FaMinus, FaPlus, FaStar, FaShareAlt } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface Review {
   id: number;

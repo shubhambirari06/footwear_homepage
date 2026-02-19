@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaEye, FaShoppingCart } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface ProductShowcaseProps {
   title?: string;
@@ -19,7 +19,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ title = "Featured Pro
         </div>
       </div>
 
-      <Row xs={1} sm={2} md={3} lg={4} className="g-4 slide-up">
+      <Row xs={1} sm={2} md={2} lg={3} className="g-4 slide-up">
         {products.map((product) => (
           <Col key={product.id}>
             <Card className="h-100 shadow-sm border-0 product-card position-relative">

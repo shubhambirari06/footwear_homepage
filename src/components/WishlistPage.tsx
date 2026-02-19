@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button, Badge, Image, Alert } from 'react-bootstrap';
 import { FaArrowLeft, FaShoppingBag, FaTrash, FaHeart } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface WishlistPageProps {
   wishlist: Product[];

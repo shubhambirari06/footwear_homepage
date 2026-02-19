@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaFilter, FaSortAmountDown } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface CategoryPageProps {
   products: Product[];
@@ -91,7 +91,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
       {/* Products Grid */}
       <Row className="g-4">
         {paginatedProducts.map((product) => (
-          <Col md={6} lg={4} xl={3} key={product.id} className="slide-up">
+          <Col md={6} lg={3} xl={3} key={product.id} className="slide-up">
             <Card className="product-card h-100 border-0 shadow-sm" style={{ cursor: 'pointer' }}>
               {/* Image Container */}
               <div className="position-relative overflow-hidden" style={{ height: '250px', background: '#f8f9fa' }}>

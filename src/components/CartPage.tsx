@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button, Image, Badge, Alert } from 'react-bootstrap';
 import { FaTrash, FaMinus, FaPlus, FaArrowLeft, FaShoppingBag, FaTruck, FaGift, FaLock } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface CartPageProps {
   cart: (Product & { quantity: number; size?: number })[];

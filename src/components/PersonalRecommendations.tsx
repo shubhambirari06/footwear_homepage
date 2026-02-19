@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaHeart, FaArrowRight } from 'react-icons/fa';
-import { Product } from '../types';
+import { Product } from '../types/index';
 
 interface PersonalRecommendationsProps {
   products: Product[];

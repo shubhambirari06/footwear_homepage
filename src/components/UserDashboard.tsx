@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FaBox, FaHeart, FaCog, FaShare } from 'react-icons/fa';
-import { User } from '../types';
+import { User } from '../types/index';
 
 interface UserDashboardProps {
   user: User | null;

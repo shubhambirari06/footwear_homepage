@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { FaShoppingBag, FaStar, FaTrophy, FaCalendarAlt } from 'react-icons/fa';
-import { User } from '../types';
+import { FaShoppingBag, FaStar, FaTrophy } from 'react-icons/fa';
+import { User } from '../types/index';
 
 interface UserStatsCardProps {
   user: User | null;

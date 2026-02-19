@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FaSmile, FaTrophy, FaGift, FaHeart } from 'react-icons/fa';
-import { User } from '../types';
+import { User } from '../types/index';
 
 interface WelcomeSectionProps {
   user: User | null;
