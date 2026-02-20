@@ -71,15 +71,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 z-[60]"
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="fixed inset-0 z-[70] flex items-center justify-center p-4"
             onClick={onClose}
           >
@@ -112,7 +112,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       src={product.image}
                       alt={product.name}
                       onLoad={() => setImageLoaded(true)}
-                      className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
+                      className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
                         imageLoaded ? 'opacity-100' : 'opacity-0'
                       }`}
                     />

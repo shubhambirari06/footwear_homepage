@@ -1,30 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User, Phone, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useAuth } from '../utils/authContext';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  AlertCircle,
+  CheckCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useAuth } from "../utils/authContext";
+import { auth, googleProvider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 interface AuthModalsProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode: 'login' | 'register';
-  onLoginSuccess?: (user: { email: string; name?: string; phoneNumber?: string; joinDate?: string }) => void;
+  initialMode: "login" | "register";
+  onLoginSuccess?: (user: {
+    email: string;
+    name?: string;
+    phoneNumber?: string;
+    joinDate?: string;
+  }) => void;
 }
 
-export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initialMode, onLoginSuccess }) => {
-  const [mode, setMode] = useState<'login' | 'register' | 'forgot-password'>(initialMode);
-  const [resetStep, setResetStep] = useState<'email' | 'new-password'>('email');
+export const AuthModals: React.FC<AuthModalsProps> = ({
+  isOpen,
+  onClose,
+  initialMode,
+  onLoginSuccess,
+}) => {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login, register } = useAuth();
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
     rememberMe: false,
   });
 
@@ -33,18 +57,17 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
   useEffect(() => {
     setMode(initialMode);
     setFormData({
-      fullName: '',
-      email: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
+      fullName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
       rememberMe: false,
     });
     setErrors({});
     setMessage(null);
     setShowPassword(false);
     setShowConfirmPassword(false);
-    setResetStep('email');
   }, [initialMode, isOpen]);
 
   const validateEmail = (email: string) => {
@@ -61,71 +84,51 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (mode === 'forgot-password') {
-      if (resetStep === 'email') {
-        if (!formData.email.trim()) {
-          newErrors.email = 'Email is required';
-        } else if (!validateEmail(formData.email)) {
-          newErrors.email = 'Please enter a valid email';
-        }
-      } else {
-        if (!formData.password) {
-          newErrors.password = 'Password is required';
-        } else if (!validatePassword(formData.password)) {
-          newErrors.password = 'Password must have 8+ chars, 1 uppercase, 1 digit';
-        }
-        if (!formData.confirmPassword) {
-          newErrors.confirmPassword = 'Please confirm password';
-        } else if (formData.password !== formData.confirmPassword) {
-          newErrors.confirmPassword = 'Passwords do not match';
-        }
-      }
-    } else
-    if (mode === 'register') {
+    if (mode === "register") {
       if (!formData.fullName.trim()) {
-        newErrors.fullName = 'Full name is required';
+        newErrors.fullName = "Full name is required";
       }
       if (!formData.email.trim()) {
-        newErrors.email = 'Email is required';
+        newErrors.email = "Email is required";
       } else if (!validateEmail(formData.email)) {
-        newErrors.email = 'Please enter a valid email';
+        newErrors.email = "Please enter a valid email";
       }
       if (!formData.phone.trim()) {
-        newErrors.phone = 'Phone number is required';
+        newErrors.phone = "Phone number is required";
       } else if (!validatePhone(formData.phone)) {
-        newErrors.phone = 'Phone must be 10 digits';
+        newErrors.phone = "Phone must be 10 digits";
       }
     } else {
       if (!formData.email.trim()) {
-        newErrors.email = 'Email is required';
+        newErrors.email = "Email is required";
       } else if (!validateEmail(formData.email)) {
-        newErrors.email = 'Please enter a valid email';
+        newErrors.email = "Please enter a valid email";
       }
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (mode === 'register' && !validatePassword(formData.password)) {
-      newErrors.password = 'Password must have 8+ chars, 1 uppercase, 1 digit';
+      newErrors.password = "Password is required";
+    } else if (mode === "register" && !validatePassword(formData.password)) {
+      newErrors.password = "Password must have 8+ chars, 1 uppercase, 1 digit";
     }
 
-    if (mode === 'register') {
+    if (mode === "register") {
       if (!formData.confirmPassword) {
-        newErrors.confirmPassword = 'Please confirm password';
+        newErrors.confirmPassword = "Please confirm password";
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Passwords do not match';
+        newErrors.confirmPassword = "Passwords do not match";
       }
     }
 
@@ -135,61 +138,53 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
     setMessage(null);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (mode === 'forgot-password') {
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        if (resetStep === 'email') {
-          const userExists = users.find((u: any) => u.email === formData.email);
-          if (userExists) {
-            setMessage({ type: 'success', text: 'Email verified. Please set a new password.' });
-            setResetStep('new-password');
-          } else {
-            setMessage({ type: 'error', text: 'No account found with this email.' });
-          }
-        } else {
-          const userIndex = users.findIndex((u: any) => u.email === formData.email);
-          if (userIndex !== -1) {
-            users[userIndex].password = formData.password;
-            localStorage.setItem("users", JSON.stringify(users));
-            setMessage({ type: 'success', text: 'Password reset successful! Redirecting to login...' });
-            setTimeout(() => {
-              setMode('login');
-              setResetStep('email');
-              setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
-            }, 1500);
-          } else {
-            setMessage({ type: 'error', text: 'Something went wrong. Please try again.' });
-          }
-        }
-      } else if (mode === 'login') {
+      if (mode === "login") {
         const result = login(formData.email, formData.password);
         if (result.success) {
-          setMessage({ type: 'success', text: 'Login successful! Redirecting...' });
+          setMessage({
+            type: "success",
+            text: "Login successful! Redirecting...",
+          });
           setTimeout(() => {
             onLoginSuccess?.({ email: formData.email });
             onClose();
           }, 1500);
         } else {
-          setMessage({ type: 'error', text: result.message || 'Login failed' });
+          setMessage({ type: "error", text: result.message || "Login failed" });
         }
       } else {
-        const result = register(formData.fullName, formData.email, formData.phone, formData.password);
+        const result = register(
+          formData.fullName,
+          formData.email,
+          formData.phone,
+          formData.password,
+        );
         if (result.success) {
-          setMessage({ type: 'success', text: 'Registration successful! Redirecting...' });
+          setMessage({
+            type: "success",
+            text: "Registration successful! Redirecting...",
+          });
           setTimeout(() => {
-            onLoginSuccess?.({ email: formData.email, name: formData.fullName });
+            onLoginSuccess?.({
+              email: formData.email,
+              name: formData.fullName,
+            });
             onClose();
           }, 1500);
         } else {
-          setMessage({ type: 'error', text: result.message || 'Registration failed' });
+          setMessage({
+            type: "error",
+            text: result.message || "Registration failed",
+          });
         }
       }
     } finally {
@@ -197,55 +192,36 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+  const handleSocialLogin = async () => {
     setLoading(true);
     setMessage(null);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock data configuration - Customize these values as needed
-      const mockData = {
-        google: { email: 'alex.taylor@gmail.com', name: 'Alex Taylor', phone: '9876543210' },
-        facebook: { email: 'alex.taylor@facebook.com', name: 'Alex Taylor', phone: '9876543211' }
+      const result = await signInWithPopup(auth, googleProvider);
+
+      const user = result.user;
+
+      const userData = {
+        email: user.email || "",
+        name: user.displayName || "",
+        phoneNumber: user.phoneNumber || "",
+        joinDate: new Date().toISOString(),
       };
 
-      const userData = mockData[provider];
-      
-      const email = userData.email;
-      const name = userData.name;
-      const phoneNumber = userData.phone;
-      const joinDate = new Date().toISOString().split('T')[0];
+      setMessage({
+        type: "success",
+        text: `Successfully logged in with Google!`,
+      });
 
-      // Check/Add to localStorage to ensure persistence/lookup works
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const existingUser = users.find((u: any) => u.email === email);
-      
-      if (!existingUser) {
-        users.push({
-          name,
-          email,
-          phoneNumber,
-          password: 'SocialLogin123!', // Dummy password
-          joinDate
-        });
-        localStorage.setItem("users", JSON.stringify(users));
-      }
-
-      setMessage({ type: 'success', text: `Successfully logged in with ${provider === 'google' ? 'Google' : 'Facebook'}!` });
-      
       setTimeout(() => {
-        onLoginSuccess?.({ 
-          email,
-          name: existingUser ? existingUser.name : name,
-          phoneNumber: existingUser ? existingUser.phoneNumber : phoneNumber,
-          joinDate: existingUser ? existingUser.joinDate : joinDate
-        });
+        onLoginSuccess?.(userData);
         onClose();
-      }, 1000);
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Login failed. Please try again.' });
+      }, 800);
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Authentication failed",
+      });
     } finally {
       setLoading(false);
     }
@@ -255,9 +231,9 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
 
   return (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 py-12 overflow-y-auto">
         {/* Backdrop */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -266,44 +242,46 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
         />
 
         {/* Modal */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md bg-white rounded-xl shadow-2xl"
         >
-          <button 
+          <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 text-neutral-400 hover:text-neutral-900 transition-colors z-10"
           >
             <X size={20} />
           </button>
-
-          <div className="p-8 md:p-10">
+          <div
+            className="overflow-y-auto p-8 scrollbar-hide"
+            style={{ maxHeight: "calc(100vh - 6rem)" }}
+          >
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-neutral-900 mb-2 uppercase tracking-tight">
-                {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Reset Password'}
+                {mode === "login"
+                  ? "Welcome Back"
+                  : "Create Account"}
               </h2>
               <p className="text-neutral-500 text-sm">
-                {mode === 'login' 
-                  ? 'Sign in to your account to continue' 
-                  : mode === 'register' 
-                    ? 'Join UrbanSteps for exclusive deals'
-                    : resetStep === 'email' ? 'Enter your email to verify account' : 'Create a new password'}
+                {mode === "login"
+                  ? "Sign in to your account to continue"
+                  : "Join UrbanSteps for exclusive deals"}
               </p>
             </div>
 
             {message && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
-                  message.type === 'error' 
-                    ? 'bg-red-50 text-red-700' 
-                    : 'bg-green-50 text-green-700'
+                  message.type === "error"
+                    ? "bg-red-50 text-red-700"
+                    : "bg-green-50 text-green-700"
                 }`}
               >
-                {message.type === 'error' ? (
+                {message.type === "error" ? (
                   <AlertCircle size={20} className="flex-shrink-0" />
                 ) : (
                   <CheckCircle size={20} className="flex-shrink-0" />
@@ -313,207 +291,250 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {mode === 'register' && (
+              {mode === "register" && (
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Full Name</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">
+                    Full Name
+                  </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-                    <input 
-                      type="text" 
+                    <User
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      size={18}
+                    />
+                    <input
+                      type="text"
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder="John Doe"
                       className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
-                        errors.fullName ? 'border-red-500' : 'border-neutral-200'
+                        errors.fullName
+                          ? "border-red-500"
+                          : "border-neutral-200"
                       }`}
                     />
                   </div>
-                  {errors.fullName && <span className="text-red-500 text-xs">{errors.fullName}</span>}
+                  {errors.fullName && (
+                    <span className="text-red-500 text-xs">
+                      {errors.fullName}
+                    </span>
+                  )}
                 </div>
               )}
 
-              {(mode !== 'forgot-password' || resetStep === 'email') && (
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-                  <input 
-                    type="email" 
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="name@example.com"
-                    className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
-                      errors.email ? 'border-red-500' : 'border-neutral-200'
-                    }`}
-                  />
-                </div>
-                {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
-              </div>
-              )}
-
-              {mode === 'register' && (
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Mobile Number</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">
+                    Email Address
+                  </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-                    <input 
-                      type="tel" 
+                    <Mail
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      size={18}
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="name@example.com"
+                      className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
+                        errors.email ? "border-red-500" : "border-neutral-200"
+                      }`}
+                    />
+                  </div>
+                  {errors.email && (
+                    <span className="text-red-500 text-xs">{errors.email}</span>
+                  )}
+                </div>
+
+              {mode === "register" && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">
+                    Mobile Number
+                  </label>
+                  <div className="relative">
+                    <Phone
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      size={18}
+                    />
+                    <input
+                      type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="10-digit number"
                       maxLength={10}
                       className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
-                        errors.phone ? 'border-red-500' : 'border-neutral-200'
+                        errors.phone ? "border-red-500" : "border-neutral-200"
                       }`}
                     />
                   </div>
-                  {errors.phone && <span className="text-red-500 text-xs">{errors.phone}</span>}
+                  {errors.phone && (
+                    <span className="text-red-500 text-xs">{errors.phone}</span>
+                  )}
                 </div>
               )}
 
-              {(mode !== 'forgot-password' || resetStep === 'new-password') && (
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Minimum 8 characters"
-                    className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-10 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
-                      errors.password ? 'border-red-500' : 'border-neutral-200'
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {errors.password && <span className="text-red-500 text-xs">{errors.password}</span>}
-                {mode === 'register' && (
-                  <p className="text-[10px] text-neutral-400 mt-1">Must contain: uppercase letter, number, 8+ characters</p>
-                )}
-              </div>
-              )}
-
-              {(mode === 'register' || (mode === 'forgot-password' && resetStep === 'new-password')) && (
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Confirm Password</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">
+                    Password
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-                    <input 
-                      type={showConfirmPassword ? "text" : "password"} 
+                    <Lock
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      size={18}
+                    />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Minimum 8 characters"
+                      className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-10 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
+                        errors.password
+                          ? "border-red-500"
+                          : "border-neutral-200"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <span className="text-red-500 text-xs">
+                      {errors.password}
+                    </span>
+                  )}
+                  {mode === "register" && (
+                    <p className="text-[10px] text-neutral-400 mt-1">
+                      Must contain: uppercase letter, number, 8+ characters
+                    </p>
+                  )}
+                </div>
+
+              {mode === "register" && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <Lock
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                      size={18}
+                    />
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
                       placeholder="Re-enter password"
                       className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-10 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
-                        errors.confirmPassword ? 'border-red-500' : 'border-neutral-200'
+                        errors.confirmPassword
+                          ? "border-red-500"
+                          : "border-neutral-200"
                       }`}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
                     >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showConfirmPassword ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
                     </button>
                   </div>
-                  {errors.confirmPassword && <span className="text-red-500 text-xs">{errors.confirmPassword}</span>}
+                  {errors.confirmPassword && (
+                    <span className="text-red-500 text-xs">
+                      {errors.confirmPassword}
+                    </span>
+                  )}
                 </div>
               )}
 
-              {mode === 'login' && (
+              {mode === "login" && (
                 <div className="flex items-center justify-between py-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       name="rememberMe"
                       checked={formData.rememberMe}
                       onChange={handleInputChange}
-                      className="rounded border-neutral-300" 
+                      className="rounded border-neutral-300"
                     />
-                    <span className="text-xs text-neutral-500">Remember Me</span>
+                    <span className="text-xs text-neutral-500">
+                      Remember Me
+                    </span>
                   </label>
-                  <a 
-                    href="#" 
-                    onClick={(e) => { e.preventDefault(); setMode('forgot-password'); setMessage(null); setErrors({}); }} 
-                    className="text-xs text-amber-700 hover:text-amber-800 font-bold"
-                  >
-                    Forgot Password?
-                  </a>
                 </div>
               )}
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={loading}
                 className="w-full py-4 bg-neutral-900 text-white font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-neutral-800 transition-colors shadow-lg shadow-neutral-900/10 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : resetStep === 'email' ? 'Verify Email' : 'Reset Password')}
+                {loading
+                  ? "Processing..."
+                  : mode === "login"
+                    ? "Sign In"
+                    : "Create Account"}
               </button>
             </form>
 
-            {mode !== 'forgot-password' && (
             <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-neutral-200"></div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-neutral-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-neutral-500 text-[10px] font-bold uppercase tracking-widest">
+                      Or continue with
+                    </span>
+                  </div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-neutral-500 text-[10px] font-bold uppercase tracking-widest">Or continue with</span>
-                </div>
-              </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('google')}
-                  disabled={loading}
-                  className="flex items-center justify-center w-full px-4 py-3 border border-neutral-200 rounded-lg shadow-sm bg-white hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('facebook')}
-                  disabled={loading}
-                  className="flex items-center justify-center w-full px-4 py-3 border border-neutral-200 rounded-lg shadow-sm bg-white hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg className="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.333-4.669 1.212 0 2.493.216 2.493.216v2.733h-1.406c-1.49 0-1.96.925-1.96 1.925v2.368h3.083l-.486 3.47h-2.596v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </button>
+                <div className="mt-6 grid grid-cols-1 gap-3">
+                  <button
+                    type="button"
+                    onClick={handleSocialLogin}
+                    disabled={loading}
+                    className="flex items-center justify-center w-full px-4 py-3 border border-neutral-200 rounded-lg shadow-sm bg-white hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg
+                      className="h-5 w-5 text-red-500 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                    </svg>
+                    <span>Sign in with Google</span>
+                  </button>
+                </div>
               </div>
-            </div>
-            )}
 
             <div className="mt-8 text-center">
               <p className="text-sm text-neutral-500">
-                {mode === 'login' ? "Don't have an account?" : mode === 'register' ? "Already have an account?" : "Remember your password?"}{' '}
-                <button 
+                {mode === "login"
+                  ? "Don't have an account?"
+                  : "Already have an account?"}{" "}
+                <button
                   onClick={() => {
-                    if (mode === 'forgot-password') {
-                      setMode('login');
-                    } else {
-                      setMode(mode === 'login' ? 'register' : 'login');
-                    }
+                    setMode(mode === "login" ? "register" : "login");
                     setErrors({});
                     setMessage(null);
                   }}
                   className="text-amber-700 font-bold hover:underline"
                 >
-                  {mode === 'login' ? 'Register' : 'Login'}
+                  {mode === "login" ? "Register" : "Login"}
                 </button>
               </p>
             </div>
@@ -522,4 +543,4 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
       </div>
     </AnimatePresence>
   );
-}
+};

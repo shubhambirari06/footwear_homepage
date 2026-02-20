@@ -1,11 +1,23 @@
-import { useState, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useMemo, useContext, ReactNode } from 'react';
 import { Product, CartItem } from '../types/index';
 
-export const useCart = () => {
+interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (product: Product, quantity?: number, size?: string) => void;
+  removeFromCart: (productId: number, size?: string) => void;
+  updateQuantity: (productId: number, quantity: number, size?: string) => void;
+  clearCart: () => void;
+  cartTotal: number;
+  cartCount: number;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const addToCart = useCallback(
-    (product: Product, quantity: number = 1, size?: number) => {
+    (product: Product, quantity: number = 1, size?: string) => {
       setCartItems(prev => {
         const existingItem = prev.find(
           item => item.id === product.id && item.size === size
@@ -25,14 +37,14 @@ export const useCart = () => {
     []
   );
 
-  const removeFromCart = useCallback((productId: number, size?: number) => {
+  const removeFromCart = useCallback((productId: number, size?: string) => {
     setCartItems(prev =>
       prev.filter(item => !(item.id === productId && item.size === size))
     );
   }, []);
 
   const updateQuantity = useCallback(
-    (productId: number, quantity: number, size?: number) => {
+    (productId: number, quantity: number, size?: string) => {
       if (quantity <= 0) {
         removeFromCart(productId, size);
         return;
@@ -58,9 +70,9 @@ export const useCart = () => {
     [cartItems]
   );
 
-  const cartCount = useMemo(() => cartItems.length, [cartItems]);
+  const cartCount = useMemo(() => cartItems.reduce((acc, item) => acc + item.quantity, 0), [cartItems]);
 
-  return {
+  const value = {
     cartItems,
     addToCart,
     removeFromCart,
@@ -69,4 +81,14 @@ export const useCart = () => {
     cartTotal,
     cartCount,
   };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+};
+
+export const useCart = (): CartContextType => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 };

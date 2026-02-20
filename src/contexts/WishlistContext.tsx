@@ -1,7 +1,18 @@
-import { useState, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useMemo, useContext, ReactNode } from 'react';
 import { Product } from '../types/index';
 
-export const useWishlist = () => {
+interface WishlistContextType {
+  wishlistItems: Product[];
+  toggleWishlist: (product: Product) => void;
+  addToWishlist: (product: Product) => void;
+  removeFromWishlist: (productId: number) => void;
+  isInWishlist: (productId: number) => boolean;
+  wishlistCount: number;
+}
+
+const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
+
+export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
 
   const toggleWishlist = useCallback((product: Product) => {
@@ -34,7 +45,7 @@ export const useWishlist = () => {
 
   const wishlistCount = useMemo(() => wishlistItems.length, [wishlistItems]);
 
-  return {
+  const value = {
     wishlistItems,
     toggleWishlist,
     addToWishlist,
@@ -42,4 +53,14 @@ export const useWishlist = () => {
     isInWishlist,
     wishlistCount,
   };
+
+  return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
+};
+
+export const useWishlist = (): WishlistContextType => {
+  const context = useContext(WishlistContext);
+  if (context === undefined) {
+    throw new Error('useWishlist must be used within a WishlistProvider');
+  }
+  return context;
 };

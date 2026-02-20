@@ -48,22 +48,15 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-      {products.map((product, index) => (
-        <motion.div
+      {products.map((product) => (
+        <ProductCard
           key={product.id}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
-          viewport={{ once: true }}
-        >
-          <ProductCard
-            product={product}
-            isInWishlist={isWishlistItem(product.id)}
-            onClick={() => onProductClick?.(product)}
-            onAddToCart={() => onAddToCart?.(product)}
-            onWishlistToggle={() => onWishlistToggle?.(product)}
-          />
-        </motion.div>
+          product={product}
+          isInWishlist={isWishlistItem(product.id)}
+          onClick={() => onProductClick?.(product)}
+          onAddToCart={() => onAddToCart?.(product)}
+          onWishlistToggle={() => onWishlistToggle?.(product)}
+        />
       ))}
     </div>
   );
