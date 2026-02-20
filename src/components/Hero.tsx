@@ -3,6 +3,20 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 
 export const Hero: React.FC = () => {
+  const scrollToFeatured = () => {
+    const element = document.getElementById('featured-products');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToCategories = () => {
+    const element = document.getElementById('categories-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="relative h-[80vh] min-h-[600px] w-full overflow-hidden bg-neutral-100">
       <div className="absolute inset-0 z-0">
@@ -33,10 +47,10 @@ export const Hero: React.FC = () => {
           </p>
           
           <div className="flex flex-wrap gap-4">
-            <button className="px-10 py-4 bg-neutral-900 text-white font-medium text-sm uppercase tracking-widest hover:bg-neutral-800 transition-all transform hover:-translate-y-1">
+            <button onClick={scrollToCategories} className="px-10 py-4 bg-neutral-900 text-white font-medium text-sm uppercase tracking-widest hover:bg-neutral-800 transition-all transform hover:-translate-y-1">
               Shop Now
             </button>
-            <button className="px-10 py-4 bg-white/10 backdrop-blur-md text-white border border-white/30 font-medium text-sm uppercase tracking-widest hover:bg-white/20 transition-all transform hover:-translate-y-1 flex items-center gap-2">
+            <button onClick={scrollToFeatured} className="px-10 py-4 bg-white/10 backdrop-blur-md text-white border border-white/30 font-medium text-sm uppercase tracking-widest hover:bg-white/20 transition-all transform hover:-translate-y-1 flex items-center gap-2">
               Explore Collection <ArrowRight size={18} />
             </button>
           </div>

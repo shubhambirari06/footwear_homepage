@@ -1,7 +1,6 @@
 import React from 'react';
 import { ProductCard, Product } from './ProductCard';
 import { motion } from 'motion/react';
-
 const products: Product[] = [
   {
     id: '1',
@@ -10,7 +9,11 @@ const products: Product[] = [
     rating: 5,
     image: "https://images.unsplash.com/photo-1768647417374-5a31c61dc5d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBydW5uaW5nJTIwc2hvZXMlMjBjbG9zZSUyMHVwfGVufDF8fHx8MTc3MTQxNDAxMHww&ixlib=rb-4.1.0&q=80&w=800",
     category: "Running",
-    isNew: true
+    isNew: true,
+    gender: "Men",
+    description: "Experience ultimate comfort and performance with the CloudRunner Pro Z1. Designed for professional runners.",
+    sizes: [7, 8, 9, 10, 11],
+    reviews: 124
   },
   {
     id: '2',
@@ -18,7 +21,11 @@ const products: Product[] = [
     price: 12450,
     rating: 4,
     image: "https://images.unsplash.com/photo-1573498945275-98751e3f605f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZW4lMjBsdXh1cnklMjBmb3JtYWwlMjBsZWF0aGVyJTIwc2hvZXMlMjBicm93bnxlbnwxfHx8fDE3NzExMzkzOTd8MA&ixlib=rb-4.1.0&q=80&w=800",
-    category: "Formal"
+    category: "Formal",
+    gender: "Men",
+    description: "Handcrafted Italian leather oxfords. Perfect for business meetings and formal events.",
+    sizes: [6, 7, 8, 9, 10],
+    reviews: 89
   },
   {
     id: '3',
@@ -26,7 +33,11 @@ const products: Product[] = [
     price: 6899,
     rating: 5,
     image: "https://images.unsplash.com/photo-1725271741216-743c37073437?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZW4lMjBsdXh1cnklMjBmb3JtYWwlMjBsZWF0aGVyJTIwc2hvZXMlMjBicm93bnxlbnwxfHx8fDE3NzExMzkzOTd8MA&ixlib=rb-4.1.0&q=80&w=800",
-    category: "Sneakers"
+    category: "Sneakers",
+    gender: "Unisex",
+    description: "Clean lines and premium materials make this sneaker a versatile choice for everyday wear.",
+    sizes: [4, 5, 6, 7, 8, 9, 10],
+    reviews: 215
   },
   {
     id: '4',
@@ -35,11 +46,15 @@ const products: Product[] = [
     rating: 5,
     image: "https://images.unsplash.com/photo-1763661300203-aa3e2702f510?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHlsaXNoJTIwbGVhdGhlciUyMGJvb3RzJTIwZmFzaGlvbnxlbnwxfHx8fDE3NzExMzkyOTN8MA&ixlib=rb-4.1.0&q=80&w=800",
     category: "Boots",
-    isNew: true
+    isNew: true,
+    gender: "Men",
+    description: "Waterproof hiking boots with superior grip and ankle support for rugged terrain.",
+    sizes: [8, 9, 10, 11, 12],
+    reviews: 67
   }
 ];
 
-export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick?: (p: any) => void }> = ({ onViewAll, onProductClick }) => {
+export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick?: (p: any) => void; onAddToCart?: (p: any) => void }> = ({ onViewAll, onProductClick, onAddToCart }) => {
   const handleViewAll = () => {
     if (onViewAll) {
       onViewAll();
@@ -105,7 +120,7 @@ export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick
         }
       `}</style>
 
-      <section className="py-24 bg-neutral-50">
+      <section id="featured-products" className="py-24 bg-neutral-50">
         <div className="container featured-container">
           <div className="text-center mb-16">
             <motion.span 
@@ -141,7 +156,7 @@ export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <ProductCard product={product} onClick={() => onProductClick?.(product)} />
+                <ProductCard product={product} onClick={() => onProductClick?.(product)} onAddToCart={() => onAddToCart?.(product)} />
               </motion.div>
             ))}
           </div>

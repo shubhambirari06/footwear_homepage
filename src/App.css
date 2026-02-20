@@ -42,7 +42,7 @@ header {
 }
 
 /* Smooth scroll behavior */
-html {
+html, body {
   scroll-behavior: smooth;
 }
 
@@ -239,4 +239,3 @@ img.loading {
 img.loaded {
   opacity: 1;
 }
-

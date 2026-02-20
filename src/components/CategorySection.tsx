@@ -36,7 +36,7 @@ const categories = [
 
 export const CategorySection: React.FC = () => {
   return (
-    <section className="py-24 bg-white">
+    <section id="categories-section" className="py-24 bg-white">
       <div className="container">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>

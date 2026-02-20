@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../utils/authContext';
 
@@ -7,13 +7,16 @@ interface AuthModalsProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode: 'login' | 'register';
-  onLoginSuccess?: (user: { email: string; name?: string }) => void;
+  onLoginSuccess?: (user: { email: string; name?: string; phoneNumber?: string; joinDate?: string }) => void;
 }
 
 export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initialMode, onLoginSuccess }) => {
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot-password'>(initialMode);
+  const [resetStep, setResetStep] = useState<'email' | 'new-password'>('email');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login, register } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -39,6 +42,9 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
     });
     setErrors({});
     setMessage(null);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setResetStep('email');
   }, [initialMode, isOpen]);
 
   const validateEmail = (email: string) => {
@@ -67,6 +73,26 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
+    if (mode === 'forgot-password') {
+      if (resetStep === 'email') {
+        if (!formData.email.trim()) {
+          newErrors.email = 'Email is required';
+        } else if (!validateEmail(formData.email)) {
+          newErrors.email = 'Please enter a valid email';
+        }
+      } else {
+        if (!formData.password) {
+          newErrors.password = 'Password is required';
+        } else if (!validatePassword(formData.password)) {
+          newErrors.password = 'Password must have 8+ chars, 1 uppercase, 1 digit';
+        }
+        if (!formData.confirmPassword) {
+          newErrors.confirmPassword = 'Please confirm password';
+        } else if (formData.password !== formData.confirmPassword) {
+          newErrors.confirmPassword = 'Passwords do not match';
+        }
+      }
+    } else
     if (mode === 'register') {
       if (!formData.fullName.trim()) {
         newErrors.fullName = 'Full name is required';
@@ -118,7 +144,32 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (mode === 'login') {
+      if (mode === 'forgot-password') {
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        if (resetStep === 'email') {
+          const userExists = users.find((u: any) => u.email === formData.email);
+          if (userExists) {
+            setMessage({ type: 'success', text: 'Email verified. Please set a new password.' });
+            setResetStep('new-password');
+          } else {
+            setMessage({ type: 'error', text: 'No account found with this email.' });
+          }
+        } else {
+          const userIndex = users.findIndex((u: any) => u.email === formData.email);
+          if (userIndex !== -1) {
+            users[userIndex].password = formData.password;
+            localStorage.setItem("users", JSON.stringify(users));
+            setMessage({ type: 'success', text: 'Password reset successful! Redirecting to login...' });
+            setTimeout(() => {
+              setMode('login');
+              setResetStep('email');
+              setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
+            }, 1500);
+          } else {
+            setMessage({ type: 'error', text: 'Something went wrong. Please try again.' });
+          }
+        }
+      } else if (mode === 'login') {
         const result = login(formData.email, formData.password);
         if (result.success) {
           setMessage({ type: 'success', text: 'Login successful! Redirecting...' });
@@ -141,6 +192,60 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
           setMessage({ type: 'error', text: result.message || 'Registration failed' });
         }
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    setLoading(true);
+    setMessage(null);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock data configuration - Customize these values as needed
+      const mockData = {
+        google: { email: 'alex.taylor@gmail.com', name: 'Alex Taylor', phone: '9876543210' },
+        facebook: { email: 'alex.taylor@facebook.com', name: 'Alex Taylor', phone: '9876543211' }
+      };
+
+      const userData = mockData[provider];
+      
+      const email = userData.email;
+      const name = userData.name;
+      const phoneNumber = userData.phone;
+      const joinDate = new Date().toISOString().split('T')[0];
+
+      // Check/Add to localStorage to ensure persistence/lookup works
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const existingUser = users.find((u: any) => u.email === email);
+      
+      if (!existingUser) {
+        users.push({
+          name,
+          email,
+          phoneNumber,
+          password: 'SocialLogin123!', // Dummy password
+          joinDate
+        });
+        localStorage.setItem("users", JSON.stringify(users));
+      }
+
+      setMessage({ type: 'success', text: `Successfully logged in with ${provider === 'google' ? 'Google' : 'Facebook'}!` });
+      
+      setTimeout(() => {
+        onLoginSuccess?.({ 
+          email,
+          name: existingUser ? existingUser.name : name,
+          phoneNumber: existingUser ? existingUser.phoneNumber : phoneNumber,
+          joinDate: existingUser ? existingUser.joinDate : joinDate
+        });
+        onClose();
+      }, 1000);
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Login failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -177,12 +282,14 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
           <div className="p-8 md:p-10">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-neutral-900 mb-2 uppercase tracking-tight">
-                {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+                {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Reset Password'}
               </h2>
               <p className="text-neutral-500 text-sm">
                 {mode === 'login' 
                   ? 'Sign in to your account to continue' 
-                  : 'Join UrbanSteps for exclusive deals'}
+                  : mode === 'register' 
+                    ? 'Join UrbanSteps for exclusive deals'
+                    : resetStep === 'email' ? 'Enter your email to verify account' : 'Create a new password'}
               </p>
             </div>
 
@@ -226,6 +333,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
                 </div>
               )}
 
+              {(mode !== 'forgot-password' || resetStep === 'email') && (
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Email Address</label>
                 <div className="relative">
@@ -243,6 +351,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
                 </div>
                 {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
               </div>
+              )}
 
               {mode === 'register' && (
                 <div className="space-y-1.5">
@@ -265,42 +374,58 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
                 </div>
               )}
 
+              {(mode !== 'forgot-password' || resetStep === 'new-password') && (
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                   <input 
-                    type="password" 
+                    type={showPassword ? "text" : "password"} 
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Minimum 8 characters"
-                    className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
+                    className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-10 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
                       errors.password ? 'border-red-500' : 'border-neutral-200'
                     }`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
                 {errors.password && <span className="text-red-500 text-xs">{errors.password}</span>}
                 {mode === 'register' && (
                   <p className="text-[10px] text-neutral-400 mt-1">Must contain: uppercase letter, number, 8+ characters</p>
                 )}
               </div>
+              )}
 
-              {mode === 'register' && (
+              {(mode === 'register' || (mode === 'forgot-password' && resetStep === 'new-password')) && (
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 ml-1">Confirm Password</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                     <input 
-                      type="password" 
+                      type={showConfirmPassword ? "text" : "password"} 
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
                       placeholder="Re-enter password"
-                      className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-4 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
+                      className={`w-full bg-neutral-50 border rounded-lg py-3 pl-10 pr-10 outline-none focus:border-amber-500 focus:bg-white transition-all text-sm ${
                         errors.confirmPassword ? 'border-red-500' : 'border-neutral-200'
                       }`}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                   {errors.confirmPassword && <span className="text-red-500 text-xs">{errors.confirmPassword}</span>}
                 </div>
@@ -318,7 +443,13 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
                     />
                     <span className="text-xs text-neutral-500">Remember Me</span>
                   </label>
-                  <a href="#" className="text-xs text-amber-700 hover:text-amber-800 font-bold">Forgot Password?</a>
+                  <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); setMode('forgot-password'); setMessage(null); setErrors({}); }} 
+                    className="text-xs text-amber-700 hover:text-amber-800 font-bold"
+                  >
+                    Forgot Password?
+                  </a>
                 </div>
               )}
 
@@ -327,16 +458,56 @@ export const AuthModals: React.FC<AuthModalsProps> = ({ isOpen, onClose, initial
                 disabled={loading}
                 className="w-full py-4 bg-neutral-900 text-white font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-neutral-800 transition-colors shadow-lg shadow-neutral-900/10 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+                {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : resetStep === 'email' ? 'Verify Email' : 'Reset Password')}
               </button>
             </form>
 
+            {mode !== 'forgot-password' && (
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-neutral-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-neutral-500 text-[10px] font-bold uppercase tracking-widest">Or continue with</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleSocialLogin('google')}
+                  disabled={loading}
+                  className="flex items-center justify-center w-full px-4 py-3 border border-neutral-200 rounded-lg shadow-sm bg-white hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSocialLogin('facebook')}
+                  disabled={loading}
+                  className="flex items-center justify-center w-full px-4 py-3 border border-neutral-200 rounded-lg shadow-sm bg-white hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg className="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.333-4.669 1.212 0 2.493.216 2.493.216v2.733h-1.406c-1.49 0-1.96.925-1.96 1.925v2.368h3.083l-.486 3.47h-2.596v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            )}
+
             <div className="mt-8 text-center">
               <p className="text-sm text-neutral-500">
-                {mode === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
+                {mode === 'login' ? "Don't have an account?" : mode === 'register' ? "Already have an account?" : "Remember your password?"}{' '}
                 <button 
                   onClick={() => {
-                    setMode(mode === 'login' ? 'register' : 'login');
+                    if (mode === 'forgot-password') {
+                      setMode('login');
+                    } else {
+                      setMode(mode === 'login' ? 'register' : 'login');
+                    }
                     setErrors({});
                     setMessage(null);
                   }}

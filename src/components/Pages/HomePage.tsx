@@ -26,14 +26,14 @@ import {
   TOAST_DURATION,
   ROUTE_PATHS,
 } from "../../config/app.config";
-import { Package, Phone, Edit2, Filter, X } from "lucide-react";
+import { Package, Phone, Edit2, Filter, X, ArrowUp, Truck, CheckCircle, Clock, Tag, Download } from "lucide-react";
 
 interface HomePageProps {
   onOpenAuth: (mode: "login" | "register") => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, updateUser } = useAuth();
   const {
     cartItems,
     addToCart,
@@ -53,6 +53,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
   const previousLoginStateRef = useRef(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [trackingOrder, setTrackingOrder] = useState<any | null>(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+  });
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const platformFee = 20;
 
   // Filter State
   const [showFilters, setShowFilters] = useState(false);
@@ -146,6 +159,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
     previousLoginStateRef.current = isLoggedIn;
   }, [isLoggedIn, addToast]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const toggleFilter = (
     item: string,
     selected: string[],
@@ -206,10 +232,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
 
   const handleAddToCart = useCallback(
     (product: Product) => {
-      addToCart(product, 1);
-      addToast(`Added ${product.name} to cart`, ToastType.SUCCESS, 2000);
+      setSelectedProduct(product);
+      setIsProductDetailOpen(true);
     },
-    [addToCart, addToast],
+    [],
   );
 
   const handleWishlistToggle = useCallback(
@@ -241,7 +267,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
 
   const handleProductDetailAddToCart = useCallback(
     (product: Product, quantity: number, size: string) => {
-      addToCart(product, quantity);
+      addToCart(product, quantity, size);
       addToast(
         `Added ${quantity}x ${product.name} (Size ${size}) to cart`,
         ToastType.SUCCESS,
@@ -250,6 +276,230 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
     },
     [addToCart, addToast],
   );
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    
+    // Mock coupon logic
+    if (couponCode.toUpperCase() === "WELCOME200") {
+      setAppliedCoupon({ code: "WELCOME200", discount: 200 });
+      setCouponCode("");
+      addToast("Coupon applied successfully!", ToastType.SUCCESS, 2000);
+    } else {
+      addToast("Invalid coupon code. Try WELCOME200", ToastType.ERROR, 2000);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    addToast("Coupon removed", ToastType.INFO, 2000);
+  };
+
+  const handleCheckout = () => {
+    if (!isLoggedIn) {
+      onOpenAuth("login");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      addToast("Your cart is empty", ToastType.INFO, 2000);
+      return;
+    }
+
+    const finalTotal = cartTotal + platformFee - (appliedCoupon?.discount || 0);
+
+    const newOrder = {
+      id: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+      date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      total: finalTotal,
+      subtotal: cartTotal,
+      platformFee: platformFee,
+      discount: appliedCoupon?.discount || 0,
+      items: [...cartItems],
+      user: user
+    };
+
+    setOrders([newOrder, ...orders]);
+    cartItems.forEach(item => removeFromCart(item.id, item.size));
+    setAppliedCoupon(null);
+    addToast("Your order is successfully placed!", ToastType.SUCCESS, 3000);
+    setCurrentView(ViewType.ORDERS);
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const gstAmount = Math.round((order.total * 18) / 118); // Assuming 18% GST included
+    const invoiceHTML = `
+      <html>
+        <head>
+          <title>Invoice ${order.id}</title>
+          <style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
+            .header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid #b45309; padding-bottom: 20px; }
+            .company-name { font-size: 28px; font-weight: bold; color: #b45309; }
+            .invoice-title { font-size: 24px; font-weight: bold; text-align: right; color: #333; }
+            .section { margin-bottom: 30px; }
+            .flex-row { display: flex; justify-content: space-between; }
+            .address-box { width: 45%; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            th { background-color: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; font-size: 14px; }
+            td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+            .totals { width: 300px; margin-left: auto; }
+            .total-row { display: flex; justify-content: space-between; padding: 8px 0; }
+            .grand-total { font-weight: bold; font-size: 18px; border-top: 2px solid #333; margin-top: 10px; padding-top: 10px; }
+            .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="company-name">URBAN STEPS</div>
+            <div class="invoice-title">
+              TAX INVOICE<br>
+              <span style="font-size: 14px; font-weight: normal;">#${order.id}</span>
+            </div>
+          </div>
+
+          <div class="section flex-row">
+            <div class="address-box">
+              <strong>Sold By:</strong><br>
+              UrbanSteps Retail Pvt Ltd<br>
+              Building 4, Tech Park<br>
+              Bangalore, Karnataka - 560103<br>
+              GSTIN: 29ABCDE1234F1Z5
+            </div>
+            <div class="address-box" style="text-align: right;">
+              <strong>Billing Address:</strong><br>
+              ${order.user?.name}<br>
+              ${order.user?.email}<br>
+              ${order.user?.phoneNumber}<br>
+              India
+            </div>
+          </div>
+
+          <div class="section">
+            <strong>Order Date:</strong> ${order.date}
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Gross Amount</th>
+                <th>Tax Amount (18%)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map((item: any) => {
+                const itemTotal = item.price * item.quantity;
+                const itemTax = Math.round((itemTotal * 18) / 118);
+                const itemBase = itemTotal - itemTax;
+                return `
+                  <tr>
+                    <td>
+                      <strong>${item.name}</strong><br>
+                      <span style="font-size: 12px; color: #666;">${item.brand} | Size: ${item.size}</span>
+                    </td>
+                    <td>${item.quantity}</td>
+                    <td>₹${itemBase.toLocaleString('en-IN')}</td>
+                    <td>₹${itemTax.toLocaleString('en-IN')}</td>
+                    <td>₹${itemTotal.toLocaleString('en-IN')}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span>₹${(order.subtotal || 0).toLocaleString('en-IN')}</span>
+            </div>
+            <div class="total-row">
+              <span>Platform Fee</span>
+              <span>₹${(order.platformFee || 0).toLocaleString('en-IN')}</span>
+            </div>
+            ${order.discount ? `
+            <div class="total-row" style="color: green;">
+              <span>Discount</span>
+              <span>-₹${order.discount.toLocaleString('en-IN')}</span>
+            </div>
+            ` : ''}
+            <div class="total-row grand-total">
+              <span>Total Amount</span>
+              <span>₹${order.total.toLocaleString('en-IN')}</span>
+            </div>
+            <div style="text-align: right; font-size: 12px; color: #666; margin-top: 5px;">
+              (Includes GST of approx. ₹${gstAmount.toLocaleString('en-IN')})
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Thank you for shopping with UrbanSteps!</p>
+            <p>For support, contact support@urbansteps.com</p>
+          </div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(invoiceHTML);
+      printWindow.document.close();
+    }
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    setCancellingOrderId(orderId);
+  };
+
+  const confirmCancelOrder = () => {
+    if (cancellingOrderId) {
+      setOrders((prev) => prev.filter((o) => o.id !== cancellingOrderId));
+      addToast("Order cancelled successfully", ToastType.INFO, 3000);
+      setCancellingOrderId(null);
+    }
+  };
+
+  const handleEditProfile = () => {
+    if (user) {
+      setEditFormData({
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+      });
+      setIsEditingProfile(true);
+    }
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!/^\d{10}$/.test(editFormData.phoneNumber)) {
+      addToast("Phone number must be 10 digits", ToastType.ERROR, 3000);
+      return;
+    }
+
+    if (user) {
+      const updatedUser = { ...user, ...editFormData };
+      
+      // Update in localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const userIndex = users.findIndex((u: any) => u.email === user.email);
+      if (userIndex !== -1) {
+        users[userIndex] = { ...users[userIndex], ...editFormData };
+        localStorage.setItem("users", JSON.stringify(users));
+      }
+
+      if (updateUser) updateUser(updatedUser);
+    }
+    
+    setIsEditingProfile(false);
+    addToast("Profile updated successfully", ToastType.SUCCESS, 2000);
+  };
 
   const displayProducts = useMemo(() => {
     if (currentView === ViewType.HOME) {
@@ -322,6 +572,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                   setCurrentView(ViewType.CATEGORY);
                 }}
                 onProductClick={handleProductClick}
+                onAddToCart={handleAddToCart}
               />
               <CategoryShowcase
                 onCategoryClick={(gender, category) => {
@@ -891,6 +1142,46 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                             <h2 className="text-xl font-bold mb-6">
                               Order Summary
                             </h2>
+
+                            {/* Coupon Section */}
+                            <div className="mb-6 pb-6 border-b border-neutral-200">
+                              <div className="flex items-center gap-2 mb-3 text-neutral-900">
+                                <Tag size={16} className="text-amber-700" />
+                                <span className="text-sm font-bold uppercase tracking-wider">Coupons</span>
+                              </div>
+                              
+                              {appliedCoupon ? (
+                                <div className="flex justify-between items-center bg-green-50 border border-green-200 p-3 rounded-lg">
+                                  <div>
+                                    <p className="text-sm font-bold text-green-700">{appliedCoupon.code}</p>
+                                    <p className="text-xs text-green-600">₹{appliedCoupon.discount} saved</p>
+                                  </div>
+                                  <button 
+                                    onClick={handleRemoveCoupon}
+                                    className="text-xs font-bold text-red-500 hover:text-red-700 uppercase"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Enter coupon code"
+                                    value={couponCode}
+                                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                    className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:border-amber-700 uppercase placeholder:normal-case"
+                                  />
+                                  <button
+                                    onClick={handleApplyCoupon}
+                                    className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold uppercase rounded-lg hover:bg-neutral-800 transition-colors"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
                             <div className="space-y-4">
                               <div className="flex justify-between text-neutral-600">
                                 <span>Subtotal:</span>
@@ -898,6 +1189,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                                   ₹{cartTotal.toLocaleString("en-IN")}
                                 </span>
                               </div>
+                              
+                              {appliedCoupon && (
+                                <div className="flex justify-between text-green-600">
+                                  <span>Coupon Discount:</span>
+                                  <span>
+                                    -₹{appliedCoupon.discount.toLocaleString("en-IN")}
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="flex justify-between text-neutral-600">
+                                <span>Platform Fee:</span>
+                                <span>
+                                  ₹{platformFee.toLocaleString("en-IN")}
+                                </span>
+                              </div>
+
                               <div className="flex justify-between text-neutral-600">
                                 <span>Shipping:</span>
                                 <span className="text-green-600 font-medium">
@@ -907,11 +1215,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                               <div className="border-t border-neutral-200 pt-4 flex justify-between">
                                 <span className="font-bold">Total:</span>
                                 <span className="text-2xl font-bold text-amber-700">
-                                  ₹{cartTotal.toLocaleString("en-IN")}
+                                  ₹{(cartTotal + platformFee - (appliedCoupon?.discount || 0)).toLocaleString("en-IN")}
                                 </span>
                               </div>
                             </div>
                             <motion.button
+                              onClick={handleCheckout}
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               className="w-full py-3 mt-6 bg-amber-700 text-white rounded-lg font-bold hover:bg-amber-800 transition-colors"
@@ -1004,13 +1313,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                       <div>
                         <div className="flex items-center justify-between mb-12">
                           <h1 className="text-4xl font-bold">My Account</h1>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            className="flex items-center gap-2 px-4 py-2 text-amber-700 border border-amber-700 rounded-lg font-medium hover:bg-amber-50 transition-colors"
-                          >
-                            <Edit2 size={18} />
-                            Edit Profile
-                          </motion.button>
+                          {!isEditingProfile && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              onClick={handleEditProfile}
+                              className="flex items-center gap-2 px-4 py-2 text-amber-700 border border-amber-700 rounded-lg font-medium hover:bg-amber-50 transition-colors"
+                            >
+                              <Edit2 size={18} />
+                              Edit Profile
+                            </motion.button>
+                          )}
                         </div>
 
                         {/* Grid Layout: Sidebar + Main Content */}
@@ -1018,40 +1330,102 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                           {/* Left Sidebar - User Info */}
                           <div className="lg:col-span-1">
                             <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-lg border border-amber-200 sticky top-24">
-                              <div className="text-center mb-6">
-                                <div className="w-20 h-20 bg-amber-700 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-4">
-                                  {user.name.charAt(0).toUpperCase()}
-                                </div>
-                                <h2 className="text-xl font-bold text-neutral-900">
-                                  {user.name}
-                                </h2>
-                                <p className="text-sm text-neutral-600">
-                                  {user.email}
-                                </p>
-                              </div>
+                              {isEditingProfile ? (
+                                <form onSubmit={handleSaveProfile}>
+                                  <div className="text-center mb-6">
+                                    <div className="w-20 h-20 bg-amber-700 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-4">
+                                      {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="space-y-3">
+                                      <input
+                                        type="text"
+                                        value={editFormData.name}
+                                        onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                                        className="w-full px-3 py-2 border border-amber-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white/50"
+                                        placeholder="Name"
+                                        required
+                                      />
+                                      <input
+                                        type="email"
+                                        value={editFormData.email}
+                                        onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                                        className="w-full px-3 py-2 border border-amber-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white/50"
+                                        placeholder="Email"
+                                        required
+                                      />
+                                    </div>
+                                  </div>
 
-                              <div className="space-y-4 border-t border-amber-200 pt-6">
-                                <div>
-                                  <p className="text-xs text-neutral-600 font-semibold mb-1">
-                                    PHONE
-                                  </p>
-                                  <p className="text-sm font-medium flex items-center gap-2">
-                                    <Phone
-                                      size={16}
-                                      className="text-amber-700"
-                                    />
-                                    {user.phoneNumber}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-neutral-600 font-semibold mb-1">
-                                    MEMBER SINCE
-                                  </p>
-                                  <p className="text-sm font-medium">
-                                    {user.joinDate}
-                                  </p>
-                                </div>
-                              </div>
+                                  <div className="space-y-4 border-t border-amber-200 pt-6">
+                                    <div>
+                                      <p className="text-xs text-neutral-600 font-semibold mb-1">
+                                        PHONE
+                                      </p>
+                                      <input
+                                        type="tel"
+                                        value={editFormData.phoneNumber}
+                                        onChange={(e) => setEditFormData({...editFormData, phoneNumber: e.target.value})}
+                                        className="w-full px-3 py-2 border border-amber-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white/50"
+                                        placeholder="Phone Number"
+                                        maxLength={10}
+                                        required
+                                      />
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsEditingProfile(false)}
+                                        className="flex-1 px-3 py-2 border border-neutral-300 rounded-md text-xs font-bold text-neutral-600 hover:bg-white transition-colors"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        type="submit"
+                                        className="flex-1 px-3 py-2 bg-amber-700 rounded-md text-xs font-bold text-white hover:bg-amber-800 transition-colors"
+                                      >
+                                        Save
+                                      </button>
+                                    </div>
+                                  </div>
+                                </form>
+                              ) : (
+                                <>
+                                  <div className="text-center mb-6">
+                                    <div className="w-20 h-20 bg-amber-700 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-4">
+                                      {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <h2 className="text-xl font-bold text-neutral-900">
+                                      {user.name}
+                                    </h2>
+                                    <p className="text-sm text-neutral-600">
+                                      {user.email}
+                                    </p>
+                                  </div>
+
+                                  <div className="space-y-4 border-t border-amber-200 pt-6">
+                                    <div>
+                                      <p className="text-xs text-neutral-600 font-semibold mb-1">
+                                        PHONE
+                                      </p>
+                                      <p className="text-sm font-medium flex items-center gap-2">
+                                        <Phone
+                                          size={16}
+                                          className="text-amber-700"
+                                        />
+                                        {user.phoneNumber}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-neutral-600 font-semibold mb-1">
+                                        MEMBER SINCE
+                                      </p>
+                                      <p className="text-sm font-medium">
+                                        {user.joinDate}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
 
@@ -1194,6 +1568,79 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                     </div>
 
                     {isLoggedIn ? (
+                      orders.length > 0 ? (
+                        <div className="space-y-8">
+                          {orders.map((order) => (
+                            <div key={order.id} className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+                              <div className="bg-neutral-50 p-4 border-b border-neutral-200 flex flex-col sm:flex-row justify-between gap-4 text-sm">
+                                <div>
+                                  <p className="text-neutral-500 font-bold uppercase text-xs">Order Placed</p>
+                                  <p className="font-medium">{order.date}</p>
+                                </div>
+                                <div>
+                                  <p className="text-neutral-500 font-bold uppercase text-xs">Total</p>
+                                  <p className="font-medium">₹{order.total.toLocaleString("en-IN")}</p>
+                                </div>
+                                <div>
+                                  <p className="text-neutral-500 font-bold uppercase text-xs">Ship To</p>
+                                  <p className="font-medium text-amber-700">{order.user?.name}</p>
+                                </div>
+                                <div>
+                                  <p className="text-neutral-500 font-bold uppercase text-xs">Order #</p>
+                                  <p className="font-medium">{order.id}</p>
+                                </div>
+                              </div>
+                              <div className="p-4 border-b border-neutral-100 bg-neutral-50/50">
+                                <h4 className="font-bold text-sm mb-2">Customer Details</h4>
+                                <p className="text-sm text-neutral-600">Email: {order.user?.email}</p>
+                                <p className="text-sm text-neutral-600">Phone: {order.user?.phoneNumber}</p>
+                              </div>
+                              <div className="p-4">
+                                {order.items.map((item: any, idx: number) => (
+                                  <div key={idx} className="flex gap-4 mb-4 last:mb-0">
+                                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md bg-neutral-100" />
+                                    <div>
+                                      <h4 className="font-bold text-sm">{item.name}</h4>
+                                      <p className="text-sm text-neutral-600">{item.brand}</p>
+                                      <p className="text-sm text-neutral-500 mt-1">Size: {item.size} | Qty: {item.quantity}</p>
+                                      <p className="text-sm font-bold text-amber-700 mt-1">₹{item.price.toLocaleString("en-IN")}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="p-4 border-t border-neutral-100 bg-neutral-50/30 flex justify-end gap-3">
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => handleCancelOrder(order.id)}
+                                  className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+                                >
+                                  <X size={16} />
+                                  Cancel Order
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => handleDownloadInvoice(order)}
+                                  className="flex items-center gap-2 px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors"
+                                >
+                                  <Download size={16} />
+                                  Invoice
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => setTrackingOrder(order)}
+                                  className="flex items-center gap-2 px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors"
+                                >
+                                  <Truck size={16} />
+                                  Track Order
+                                </motion.button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
                       <div className="p-8 border border-neutral-200 rounded-lg text-center bg-neutral-50">
                         <Package
                           size={48}
@@ -1208,12 +1655,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
                         </p>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
-                          onClick={() => setCurrentView("category")}
+                          onClick={() => setCurrentView(ViewType.CATEGORY)}
                           className="px-8 py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors inline-block"
                         >
                           Start Shopping
                         </motion.button>
                       </div>
+                      )
                     ) : (
                       <div className="text-center py-12">
                         <h2 className="text-2xl font-bold mb-2">
@@ -1246,6 +1694,188 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenAuth }) => {
           selectedProduct ? isInWishlist(selectedProduct.id) : false
         }
       />
+
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-50 p-3 bg-neutral-900 text-white rounded-full shadow-xl hover:bg-amber-700 transition-colors"
+          >
+            <ArrowUp size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {trackingOrder && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setTrackingOrder(null)}
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-neutral-100 flex justify-between items-center">
+                <h3 className="font-bold text-lg">Track Order</h3>
+                <button
+                  onClick={() => setTrackingOrder(null)}
+                  className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="mb-8 bg-neutral-50 p-4 rounded-lg border border-neutral-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider">Order ID</p>
+                      <p className="font-medium text-neutral-900">{trackingOrder.id}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider">Estimated Delivery</p>
+                      <p className="font-medium text-amber-700">Arriving by {new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative pl-4">
+                  <div className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-neutral-100" />
+                  {[
+                    { title: "Order Placed", date: trackingOrder.date, status: "completed" },
+                    { title: "Processing", date: trackingOrder.date, status: "completed" },
+                    { title: "Shipped", date: "Today", status: "current" },
+                    { title: "Out for Delivery", date: "Pending", status: "upcoming" },
+                    { title: "Delivered", date: "Pending", status: "upcoming" }
+                  ].map((step, idx) => (
+                    <div key={idx} className="flex gap-4 mb-8 last:mb-0 relative z-10">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${
+                        step.status === 'completed' ? 'bg-green-50 border-green-500 text-green-600' :
+                        step.status === 'current' ? 'bg-amber-50 border-amber-500 text-amber-700' :
+                        'bg-white border-neutral-200 text-neutral-300'
+                      }`}>
+                        {step.status === 'completed' ? <CheckCircle size={14} /> :
+                         step.status === 'current' ? <Truck size={14} /> :
+                         <Clock size={14} />}
+                      </div>
+                      <div className="pt-1">
+                        <h4 className={`text-sm font-bold ${
+                          step.status === 'current' ? 'text-amber-700' :
+                          step.status === 'completed' ? 'text-neutral-900' : 'text-neutral-400'
+                        }`}>{step.title}</h4>
+                        <p className="text-xs text-neutral-500 mt-0.5">{step.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {cancellingOrderId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setCancellingOrderId(null)}
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-neutral-100 flex justify-between items-center">
+                <h3 className="font-bold text-lg">Cancel Order</h3>
+                <button
+                  onClick={() => setCancellingOrderId(null)}
+                  className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <p className="text-neutral-600 mb-6">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setCancellingOrderId(null)}
+                    className="px-4 py-2 text-neutral-600 font-medium hover:bg-neutral-100 rounded-lg transition-colors"
+                  >
+                    Keep Order
+                  </button>
+                  <button
+                    onClick={confirmCancelOrder}
+                    className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Yes, Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {cancellingOrderId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setCancellingOrderId(null)}
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-neutral-100 flex justify-between items-center">
+                <h3 className="font-bold text-lg">Cancel Order</h3>
+                <button
+                  onClick={() => setCancellingOrderId(null)}
+                  className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <p className="text-neutral-600 mb-6">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setCancellingOrderId(null)}
+                    className="px-4 py-2 text-neutral-600 font-medium hover:bg-neutral-100 rounded-lg transition-colors"
+                  >
+                    Keep Order
+                  </button>
+                  <button
+                    onClick={confirmCancelOrder}
+                    className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Yes, Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

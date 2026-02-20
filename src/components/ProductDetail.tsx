@@ -31,9 +31,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose, onAddTo
   const [newReviewName, setNewReviewName] = useState('');
 
   const handleShare = async () => {
-    if (navigator.share) {
+    if ((navigator as any).share) {
       try {
-        await navigator.share({
+        await (navigator as any).share({
           title: product?.name,
           text: `Check out this ${product?.name}`,
           url: window.location.href,
