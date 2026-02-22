@@ -15,6 +15,8 @@ import { AuthModals } from './components/AuthModals';
 import { useCart } from './contexts/CartContext';
 import { useWishlist } from './contexts/WishlistContext';
 
+
+
 const App: React.FC = () => {
   const { toasts, removeToast } = useToast();
   const {

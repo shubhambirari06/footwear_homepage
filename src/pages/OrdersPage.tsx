@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../utils/authContext';
 import { Link } from 'react-router-dom';
 import { Package, X, Download, Truck, CheckCircle, Clock } from 'lucide-react';
@@ -11,8 +11,12 @@ export const OrdersPage: React.FC = () => {
     null
   );
 
+  useEffect(() => {
+    const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    setOrders(savedOrders);
+  }, []);
+
   const handleDownloadInvoice = (order: any) => {
-    // This is a mock implementation. In a real app, this would generate a PDF.
     alert(`Downloading invoice for order ${order.id}`);
   };
 
@@ -22,7 +26,9 @@ export const OrdersPage: React.FC = () => {
 
   const confirmCancelOrder = () => {
     if (cancellingOrderId) {
-      setOrders((prev) => prev.filter((o) => o.id !== cancellingOrderId));
+      const updatedOrders = orders.filter((o) => o.id !== cancellingOrderId);
+      setOrders(updatedOrders);
+      localStorage.setItem('orders', JSON.stringify(updatedOrders));
       setCancellingOrderId(null);
     }
   };

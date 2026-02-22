@@ -232,7 +232,6 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
   return (
     <AnimatePresence mode="wait">
       <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 py-12 overflow-y-auto">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -241,7 +240,6 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
           className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
         />
 
-        {/* Modal */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

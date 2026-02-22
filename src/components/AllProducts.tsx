@@ -1,17 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, ArrowLeft } from 'lucide-react';
 import { products } from '../data/index';
 import { Product } from '../types/index';
 import { ProductCard } from './ProductCard';
-import { ProductDetailModal } from './Product/ProductDetailModal';
+import ProductDetail from './ProductDetail';
 import { Footer } from './Footer';
 
 interface AllProductsProps {
   onBack: () => void;
+  onAddToCart?: (product: Product, quantity: number, size: string | number) => void;
 }
 
-export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
+export const AllProducts: React.FC<AllProductsProps> = ({ onBack, onAddToCart }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
@@ -279,7 +280,7 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                 </motion.div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                   <AnimatePresence mode="popLayout">
-                  {paginatedProducts.map((product, index) => (
+                  {paginatedProducts.map((product) => (
                     <motion.div
                       layout
                       key={product.id}
@@ -288,7 +289,11 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <ProductCard product={product} onClick={() => setSelectedProduct(product)} />
+                      <ProductCard 
+                        product={product} 
+                        onClick={() => setSelectedProduct(product)}
+                        onAddToCart={(q, s) => onAddToCart?.(product, q, s)}
+                      />
                     </motion.div>
                   ))}
                   </AnimatePresence>
@@ -367,10 +372,11 @@ export const AllProducts: React.FC<AllProductsProps> = ({ onBack }) => {
 
       <Footer />
 
-      <ProductDetailModal 
+      <ProductDetail 
         product={selectedProduct}
-        isOpen={selectedProduct !== null}
         onClose={() => setSelectedProduct(null)}
+        onAddToCart={(p, q, s) => onAddToCart?.(p, q, s)}
+        onSaveForLater={() => {}}
       />
     </>
   );

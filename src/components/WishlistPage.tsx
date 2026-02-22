@@ -6,7 +6,7 @@ import { Product } from '../types/index';
 interface WishlistPageProps {
   wishlist: Product[];
   onRemove: (productId: number) => void;
-  onAddToCart: (product: Product, quantity: number, size: number) => void;
+  onAddToCart: (product: Product, quantity: number, size: string | number) => void;
   onBack: () => void;
 }
 

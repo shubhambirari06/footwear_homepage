@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Heart, Star } from 'lucide-react';
 import { Product } from '../types/index';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (quantity: number, size: number) => void;
+  onAddToCart?: (quantity: number, size: string | number) => void;
   onToggleWishlist?: () => void;
   isInWishlist?: boolean;
+  onClick?: () => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -15,14 +16,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart,
   onToggleWishlist,
   isInWishlist = false,
+  onClick,
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  const sizes = [6, 7, 8, 9, 10, 11, 12];
+  const sizes = product.sizes || [6, 7, 8, 9, 10, 11, 12];
 
   const handleAddToCart = () => {
+    e?.stopPropagation();
     if (selectedSize === null) {
       alert('Please select a size');
       return;
@@ -35,7 +38,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       whileHover={{ translateY: -4 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-neutral-100 hover:border-amber-700 transition-all shadow-sm hover:shadow-lg"
+      onClick={onClick}
+      className={`flex flex-col h-full bg-white rounded-xl overflow-hidden border border-neutral-100 hover:border-amber-700 transition-all shadow-sm hover:shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
     >
       {/* Image Container */}
       <div className="relative overflow-hidden bg-neutral-100 aspect-square">
@@ -54,7 +58,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={onToggleWishlist}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleWishlist?.();
+          }}
           className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-all"
         >
           <Heart

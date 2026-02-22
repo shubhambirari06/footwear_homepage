@@ -4,9 +4,9 @@ import { FaTrash, FaMinus, FaPlus, FaArrowLeft, FaShoppingBag, FaTruck, FaGift, 
 import { Product } from '../types/index';
 
 interface CartPageProps {
-  cart: (Product & { quantity: number; size?: number })[];
-  onRemove: (productId: number, size?: number) => void;
-  onUpdateQuantity: (productId: number, quantity: number, size?: number) => void;
+  cart: (Product & { quantity: number; size?: string | number })[];
+  onRemove: (productId: number, size?: string | number) => void;
+  onUpdateQuantity: (productId: number, quantity: number, size?: string | number) => void;
   onCheckout: () => void;
 }
 

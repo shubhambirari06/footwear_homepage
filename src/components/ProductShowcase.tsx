@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { FaEye, FaShoppingCart } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 import { Product } from '../types/index';
 
 interface ProductShowcaseProps {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone, Mail } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 const indianAddresses = [
   "Connaught Place, New Delhi - 110001",
@@ -128,10 +128,17 @@ export const Footer: React.FC = () => {
                 Redefining movement through exceptional footwear design. We combine premium materials with innovative technology to create shoes that empower every step of your journey.
               </p>
               <div className="flex gap-4">
-                {[Facebook, Instagram, Twitter, Youtube].map((Icon, index) => (
+                {[
+                  { Icon: Facebook, href: "https://www.facebook.com/urbansteps" },
+                  { Icon: Instagram, href: "https://www.instagram.com/urbansteps" },
+                  { Icon: Twitter, href: "https://twitter.com/urbansteps" },
+                  { Icon: Youtube, href: "https://www.youtube.com/urbansteps" }
+                ].map(({ Icon, href }, index) => (
                   <motion.a 
                     key={index}
-                    href="#" 
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     whileHover={{ scale: 1.2, rotate: 10 }}
                     whileTap={{ scale: 0.95 }}
                     className="social-icon p-2 bg-neutral-100 rounded-full text-neutral-600 hover:bg-neutral-900 hover:text-white transition-all"

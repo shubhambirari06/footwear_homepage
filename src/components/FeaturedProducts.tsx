@@ -1,9 +1,9 @@
 import React from 'react';
 import { ProductCard, Product } from './ProductCard';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 const products: Product[] = [
   {
-    id: '1',
+    id: 1,
     name: "CloudRunner Pro Z1",
     price: 8999,
     rating: 5,
@@ -11,36 +11,36 @@ const products: Product[] = [
     category: "Running",
     isNew: true,
     gender: "Men",
+    brand: "UrbanSteps",
     description: "Experience ultimate comfort and performance with the CloudRunner Pro Z1. Designed for professional runners.",
     sizes: [7, 8, 9, 10, 11],
-    reviews: 124
   },
   {
-    id: '2',
+    id: 2,
     name: "Classic Oxford Leather",
     price: 12450,
     rating: 4,
     image: "https://images.unsplash.com/photo-1573498945275-98751e3f605f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZW4lMjBsdXh1cnklMjBmb3JtYWwlMjBsZWF0aGVyJTIwc2hvZXMlMjBicm93bnxlbnwxfHx8fDE3NzExMzkzOTd8MA&ixlib=rb-4.1.0&q=80&w=800",
     category: "Formal",
     gender: "Men",
+    brand: "LuxeWalk",
     description: "Handcrafted Italian leather oxfords. Perfect for business meetings and formal events.",
     sizes: [6, 7, 8, 9, 10],
-    reviews: 89
   },
   {
-    id: '3',
+    id: 3,
     name: "Minimalist Urban Sneaker",
     price: 6899,
     rating: 5,
     image: "https://images.unsplash.com/photo-1725271741216-743c37073437?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZW4lMjBsdXh1cnklMjBmb3JtYWwlMjBsZWF0aGVyJTIwc2hvZXMlMjBicm93bnxlbnwxfHx8fDE3NzExMzkzOTd8MA&ixlib=rb-4.1.0&q=80&w=800",
     category: "Sneakers",
-    gender: "Unisex",
+    gender: "Men",
+    brand: "UrbanSteps",
     description: "Clean lines and premium materials make this sneaker a versatile choice for everyday wear.",
     sizes: [4, 5, 6, 7, 8, 9, 10],
-    reviews: 215
   },
   {
-    id: '4',
+    id: 4,
     name: "Peak Performance Hiker",
     price: 15750,
     rating: 5,
@@ -48,9 +48,9 @@ const products: Product[] = [
     category: "Boots",
     isNew: true,
     gender: "Men",
+    brand: "TrailBlazer",
     description: "Waterproof hiking boots with superior grip and ankle support for rugged terrain.",
     sizes: [8, 9, 10, 11, 12],
-    reviews: 67
   }
 ];
 
@@ -155,8 +155,10 @@ export const FeaturedProducts: React.FC<{ onViewAll?: () => void; onProductClick
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                onClick={() => onProductClick?.(product)}
+                className="cursor-pointer"
               >
-                <ProductCard product={product} onClick={() => onProductClick?.(product)} onAddToCart={() => onAddToCart?.(product)} />
+                <ProductCard product={product} onAddToCart={(quantity, size) => onAddToCart?.({ ...product, quantity, size })} />
               </motion.div>
             ))}
           </div>

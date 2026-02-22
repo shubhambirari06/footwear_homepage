@@ -22,7 +22,6 @@ export const CategoryPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
 
-  // Filter State
   const [showFilters, setShowFilters] = useState(false);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -47,7 +46,6 @@ export const CategoryPage: React.FC = () => {
     }
   }, [gender]);
 
-  // Derived Data for Filters
   const genders = useMemo(
     () => Array.from(new Set(products.map((p) => p.gender).filter(Boolean))),
     [],
@@ -61,7 +59,6 @@ export const CategoryPage: React.FC = () => {
     [],
   );
 
-  // Filter Logic
   const filteredProducts = useMemo(() => {
     let result = [...products];
 

@@ -8,7 +8,7 @@ interface CategoryPageProps {
   gender: string;
   subcategory: string;
   onBack: () => void;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, quantity?: number, size?: string | number) => void;
 }
 
 const ProductImage: React.FC<{ src: string; alt: string; className?: string; style?: React.CSSProperties }> = ({ src, alt, className, style }) => {
@@ -26,6 +26,85 @@ const ProductImage: React.FC<{ src: string; alt: string; className?: string; sty
         onLoad={() => setLoaded(true)}
       />
     </>
+  );
+};
+
+const CategoryProductCard: React.FC<{ product: Product; onAddToCart: (p: Product, q: number, s: string | number) => void }> = ({ product, onAddToCart }) => {
+  const [selectedSize, setSelectedSize] = useState<string | number | null>(null);
+  const sizes = product.sizes || [6, 7, 8, 9, 10];
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+    onAddToCart(product, 1, selectedSize);
+  };
+
+  return (
+    <Card className="product-card h-100 border-0 shadow-sm" style={{ cursor: 'pointer' }}>
+      {/* Image Container */}
+      <div className="position-relative overflow-hidden" style={{ height: '250px', background: '#f8f9fa' }}>
+        <ProductImage
+          src={product.image}
+          alt={product.name}
+          className="h-100"
+          style={{ objectFit: 'cover' }}
+        />
+        {product.isNew && (
+          <Badge bg="success" className="position-absolute top-2 end-2">
+            NEW
+          </Badge>
+        )}
+      </div>
+
+      {/* Content */}
+      <Card.Body className="d-flex flex-column">
+        <small className="text-primary fw-bold text-uppercase mb-2" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
+          {product.brand}
+        </small>
+        <h6 className="fw-bold mb-2" style={{ fontSize: '15px', lineHeight: '1.4' }}>
+          {product.name}
+        </h6>
+        <p className="text-muted small mb-3" style={{ fontSize: '12px' }}>
+          {product.category} • {product.gender}
+        </p>
+
+        {/* Size Selection */}
+        <div className="mb-3">
+          <small className="text-muted d-block mb-1" style={{ fontSize: '11px' }}>Select Size:</small>
+          <div className="d-flex gap-1 flex-wrap">
+            {sizes.map(size => (
+              <Button
+                key={size}
+                variant={selectedSize === size ? "dark" : "outline-secondary"}
+                size="sm"
+                className="p-0"
+                style={{ width: '28px', height: '28px', fontSize: '11px' }}
+                onClick={() => setSelectedSize(size)}
+              >
+                {size}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Price and Button */}
+        <div className="mt-auto">
+          <div className="fw-bold text-primary mb-2" style={{ fontSize: '18px' }}>
+            ₹{product.price.toLocaleString('en-IN')}
+          </div>
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-100 fw-bold rounded-lg"
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </Button>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 
@@ -110,50 +189,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
       <Row className="g-4">
         {paginatedProducts.map((product) => (
           <Col md={6} lg={3} xl={3} key={product.id} className="slide-up">
-            <Card className="product-card h-100 border-0 shadow-sm" style={{ cursor: 'pointer' }}>
-              {/* Image Container */}
-              <div className="position-relative overflow-hidden" style={{ height: '250px', background: '#f8f9fa' }}>
-                <ProductImage
-                  src={product.image}
-                  alt={product.name}
-                  className="h-100"
-                  style={{ objectFit: 'cover' }}
-                />
-                {product.isNew && (
-                  <Badge bg="success" className="position-absolute top-2 end-2">
-                    NEW
-                  </Badge>
-                )}
-              </div>
-
-              {/* Content */}
-              <Card.Body className="d-flex flex-column">
-                <small className="text-primary fw-bold text-uppercase mb-2" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
-                  {product.brand}
-                </small>
-                <h6 className="fw-bold mb-2" style={{ fontSize: '15px', lineHeight: '1.4' }}>
-                  {product.name}
-                </h6>
-                <p className="text-muted small mb-3" style={{ fontSize: '12px' }}>
-                  {product.category} • {product.gender}
-                </p>
-
-                {/* Price and Button */}
-                <div className="mt-auto">
-                  <div className="fw-bold text-primary mb-2" style={{ fontSize: '18px' }}>
-                    ₹{product.price.toLocaleString('en-IN')}
-                  </div>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="w-100 fw-bold rounded-lg"
-                    onClick={() => onAddToCart(product)}
-                  >
-                    Add to Cart
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
+            <CategoryProductCard product={product} onAddToCart={onAddToCart} />
           </Col>
         ))}
       </Row>

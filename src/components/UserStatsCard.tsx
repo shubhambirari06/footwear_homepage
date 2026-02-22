@@ -8,12 +8,6 @@ interface UserStatsCardProps {
 }
 
 const UserStatsCard: React.FC<UserStatsCardProps> = ({ user }) => {
-  const getMembershipDuration = (joinDate?: string) => {
-    if (!joinDate) return '2024';
-    const date = new Date(joinDate);
-    return date.getFullYear().toString();
-  };
-
   const formatJoinDate = (joinDate?: string) => {
     if (!joinDate) return 'Recently';
     const date = new Date(joinDate);

@@ -17,7 +17,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const addToCart = useCallback(
-    (product: Product, quantity: number = 1, size?: string) => {
+    (product: Product, quantity: number = 1, size?: string | number) => {
       setCartItems(prev => {
         const existingItem = prev.find(
           item => item.id === product.id && item.size === size
@@ -37,14 +37,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     []
   );
 
-  const removeFromCart = useCallback((productId: number, size?: string) => {
+  const removeFromCart = useCallback((productId: number, size?: string | number) => {
     setCartItems(prev =>
       prev.filter(item => !(item.id === productId && item.size === size))
     );
   }, []);
 
   const updateQuantity = useCallback(
-    (productId: number, quantity: number, size?: string) => {
+    (productId: number, quantity: number, size?: string | number) => {
       if (quantity <= 0) {
         removeFromCart(productId, size);
         return;

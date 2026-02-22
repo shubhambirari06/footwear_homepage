@@ -10,12 +10,12 @@ export interface Product {
   isNew?: boolean;
   rating?: number;
   stock?: number;
-  sizes?: string[];
+  sizes?: (string | number)[];
 }
 
 export interface CartItem extends Product {
   quantity: number;
-  size?: number;
+  size?: string | number;
 }
 
 export interface User {

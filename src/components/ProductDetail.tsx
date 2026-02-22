@@ -14,13 +14,13 @@ interface Review {
 interface ProductDetailProps {
   product: Product | null;
   onClose: () => void;
-  onAddToCart: (product: Product, quantity: number, size: number) => void;
+  onAddToCart: (product: Product, quantity: number, size: string | number) => void;
   onSaveForLater: (product: Product) => void;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose, onAddToCart, onSaveForLater }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | number | null>(null);
   const sizes = [6, 7, 8, 9, 10, 11];
   const [reviews, setReviews] = useState<Review[]>([
     { id: 1, user: 'Rahul K.', rating: 5, comment: 'Excellent quality and very comfortable!', date: '2024-03-10' },

@@ -14,7 +14,7 @@ export const CartPage: React.FC = () => {
     cartTotal,
     clearCart,
   } = useCart();
-  const { isLoggedIn, onOpenAuth } = useAuth();
+  const { isLoggedIn, onOpenAuth, user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -50,7 +50,25 @@ export const CartPage: React.FC = () => {
       return;
     }
     
-    // In a real app, this would redirect to a checkout page or service
+    const newOrder = {
+      id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+      date: new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      total: cartTotal + platformFee - (appliedCoupon?.discount || 0),
+      user: {
+        name: user?.name || 'Guest',
+        email: user?.email || '',
+        phoneNumber: user?.phoneNumber || '',
+      },
+      items: cartItems,
+    };
+
+    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    localStorage.setItem('orders', JSON.stringify([newOrder, ...existingOrders]));
+
     addToast('Redirecting to checkout...', ToastType.SUCCESS, 2000);
     clearCart();
     navigate('/orders');

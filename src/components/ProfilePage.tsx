@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Card, Nav, Tab, Badge, Button, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Nav, Tab, Badge, Button } from 'react-bootstrap';
 import { FaUser, FaShoppingBag, FaSignOutAlt, FaArrowLeft } from 'react-icons/fa';
 import { User } from '../types/index';
 
